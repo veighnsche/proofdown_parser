@@ -4,9 +4,20 @@ Status: Draft (Standalone)
 
 This document defines the requirements and design for the `proofdown_parser` crate. It specializes in parsing Proofdown (Component Markdown, CMD) into a deterministic AST for rendering and fragment extraction.
 
+## Related documents
+
+- Language v1: [01_proofdown_language_v1.md](./01_proofdown_language_v1.md)
+- Artifact-first semantics: [02_artifact_first_language_spec.md](./02_artifact_first_language_spec.md)
+- Language v2 (additive): [03_proofdown_language_v2.md](./03_proofdown_language_v2.md)
+- Authoring guide: [../.docs/proofdown-authoring-guide.md](../.docs/proofdown-authoring-guide.md)
+- Testing artifacts catalog: [../.docs/testing-artifacts/README.md](../.docs/testing-artifacts/README.md)
+- Table row schemas (JSON): [./schemas/README.md](./schemas/README.md)
+
 ## Scope and Standalone Note
 
 This document is self-contained and normative for the `proofdown_parser` submodule. It includes the essential grammar, component registry, link macro ABNF, bounds, and error model so that the team owning this crate can work independently.
+
+Note on v2 compatibility: Language v2 is additive over v1 and does not change the core grammar parsed by this crate. New viewer capabilities and bounds (e.g., `artifact.text`, `caption`, `json_pointer`) are enforced by validators and renderers. If a component whitelist is enforced in parsing, include `artifact.text` accordingly.
 
 ## Goals
 

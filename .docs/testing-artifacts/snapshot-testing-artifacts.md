@@ -29,6 +29,14 @@ Snapshot tests compare the current output to a stored baseline. Artifacts includ
 - Treat HTML/DOM dumps as data; escape at render time and avoid embedding scriptable content.
 - Prefer digest-addressed image and text artifacts to ensure immutability across runs.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (snapshots): ../../.specs/schemas/snapshots.schema.json
+
 ## References
 
 - Jest snapshots: https://jestjs.io/docs/snapshot-testing

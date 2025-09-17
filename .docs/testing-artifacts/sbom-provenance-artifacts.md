@@ -45,6 +45,15 @@ SLSA Provenance (excerpt):
 - Keep grammar minimal and parser syntax-only; normalization and enrichment (e.g., CVE joins) occur in SSG/validator.
 - Large SBOMs should default to collapsed JSON with optional `depth` to keep pages usable and deterministic.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (sbom): ../../.specs/schemas/sbom.schema.json
+- Table schema (provenance): ../../.specs/schemas/provenance.schema.json
+
 ## References
 
 - SPDX specs: https://spdx.dev/use/specifications/

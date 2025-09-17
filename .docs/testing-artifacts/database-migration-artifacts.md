@@ -73,6 +73,14 @@ not ok 3 - column email has unique index
 - Support TAP/JUnit summaries via `artifact.json`; avoid embedding large logs inline—link them instead.
 - Prefer digest-addressed artifacts so reviewers can verify the exact plan and diff that CI produced.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (db_migrations): ../../.specs/schemas/db_migrations.schema.json
+
 ## References
 
 - Flyway: <https://documentation.red-gate.com/fd>

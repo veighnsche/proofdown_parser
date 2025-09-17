@@ -53,6 +53,14 @@ Evidently AI drift report (excerpt):
 - Keep grammar minimal; the parser remains syntax-only while SSG normalizes GE/Soda/dbt/TFMA outputs.
 - Default to collapsed JSON with optional `depth` for big artifacts (dbt manifests, TFMA results) and use digest-addressed references.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (data_quality): ../../.specs/schemas/data_quality.schema.json
+
 ## References
 
 - Great Expectations validation results: https://docs.greatexpectations.io/

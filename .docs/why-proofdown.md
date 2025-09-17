@@ -4,6 +4,15 @@ Make proofs the product. Put specs, contracts, tests, artifacts, and documented 
 
 Proofdown is a purpose-built markup for rendering and reviewing testing evidence that a build actually produced. It exists because general-purpose documentation formats are too permissive and too ambiguous to support verifiable, deterministic, tamper‑evident proof pages authored at AI speed.
 
+## Related documents
+
+- Language v1: [../.specs/01_proofdown_language_v1.md](../.specs/01_proofdown_language_v1.md)
+- Artifact-first semantics: [../.specs/02_artifact_first_language_spec.md](../.specs/02_artifact_first_language_spec.md)
+- Language v2 (additive): [../.specs/03_proofdown_language_v2.md](../.specs/03_proofdown_language_v2.md)
+- Authoring guide: [./proofdown-authoring-guide.md](./proofdown-authoring-guide.md)
+- Testing artifacts catalog: [./testing-artifacts/README.md](./testing-artifacts/README.md)
+- Table row schemas (JSON): [../.specs/schemas/README.md](../.specs/schemas/README.md)
+
 ## The trust gap (and why documentation isn’t enough)
 
 AI-generated code is pervasive. Velocity is no longer the bottleneck—trust is. Traditional documentation, even when thorough, is:

@@ -4,6 +4,15 @@ Proofdown Parser parses Proofdown (Component Markdown, CMD) into a deterministic
 
 This README summarizes the v1 parser scope, grammar, AST, API, limits, security model, component registry, and roadmap, drawing from `.specs/00_proofdown_parser.md`, `.plans/00_workspace_plan.md`, and the current crate implementation at `crates/proofdown_parser/src/lib.rs`.
 
+## Quick links
+
+- Language v1 spec: [.specs/01_proofdown_language_v1.md](./.specs/01_proofdown_language_v1.md)
+- Artifact-first semantics: [.specs/02_artifact_first_language_spec.md](./.specs/02_artifact_first_language_spec.md)
+- Language v2 spec (additive): [.specs/03_proofdown_language_v2.md](./.specs/03_proofdown_language_v2.md)
+- Authoring guide (LLM-friendly): [.docs/proofdown-authoring-guide.md](./.docs/proofdown-authoring-guide.md)
+- Testing artifacts catalog: [.docs/testing-artifacts/README.md](./.docs/testing-artifacts/README.md)
+- Table row schemas (JSON): [.specs/schemas/README.md](./.specs/schemas/README.md)
+
 ## Status
 
 - Maturity: MVP in-repo parser crate with a minimal, pure parser.

@@ -122,3 +122,44 @@ thiserror = "1"
   - Mitigation: keep AST stable and versioned; expose only necessary functions; use feature flags.
 - WASM size/perf:
   - Mitigation: pure Rust, small dep footprint; consider `wasm-opt` in CI.
+
+## v2 adoption plan (additive over v1)
+
+Goals:
+
+- Keep parser grammar unchanged while supporting v2 viewers/attributes in validation and SSG.
+- Harden interoperability via minimal JSON Schemas for common `artifact.table kind`s.
+- Expand the normative test corpus with v2 conformance fixtures.
+
+Tasks:
+
+1) Validator updates (proofdown_validate or SSG validator)
+   - Enforce new bounded attributes: `artifact.json.json_pointer`, `artifact.image.caption`, `artifact.table.caption`, `artifact.text.max_lines`.
+   - Recognize `artifact.text` as a valid viewer; validate `max_lines` bounds (1..500) and UTF-8 text assumption.
+   - Support `artifact.table` column selectors that are simple keys or RFC 6901 JSON Pointers (static projection only).
+   - Optionally validate `kind`-specific row shapes using `.specs/schemas/*.schema.json`.
+
+2) Parser notes
+   - Grammar unchanged; component syntax continues as-is.
+   - If the parser enforces a whitelist, add `artifact.text` to the allowed set (gated by a feature or version flag as needed).
+
+3) Renderer/SSG
+   - Add captions rendering for images/tables/links.
+   - Implement JSON Pointer projection for `artifact.json` and `artifact.table` (static, no query semantics).
+   - Respect bounds with clear truncation/elision indicators.
+   - Fail-closed on digest mismatch/missing artifacts.
+
+4) Test corpus
+   - Add v2 fixtures under `crates/proofdown_parser/tests/fixtures/` (examples across categories).
+   - Ensure parser can parse all fixtures (`parse_v2_fixtures.rs` test added).
+   - Add renderer/validator tests in downstream repos to assert v2 behaviors and failure modes.
+
+5) Docs
+   - Link `.specs/03_proofdown_language_v2.md` from README and related docs.
+   - Maintain `.specs/schemas/` with a `README.md` summarizing usage.
+   - Keep the authoring guide aligned with v2 patterns (captions, pointers, `artifact.text`).
+
+Rollout:
+
+- Default renderers remain compatible with v1 documents.
+- Capabilities flag may advertise v2 support; documents can opt to v2 patterns incrementally.

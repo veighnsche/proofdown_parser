@@ -36,6 +36,14 @@ Mutation testing flips or removes code constructs to ensure tests fail appropria
 - Parser remains syntax-only; SSG normalizes PIT XML and Stryker JSON into stable summaries.
 - Prefer digest-addressed artifacts to ensure stable references across runs.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (mutation): ../../.specs/schemas/mutation.schema.json
+
 ## References
 
 - Stryker report schema: https://github.com/stryker-mutator/mutation-testing-elements/blob/master/packages/report-schema/src/mutation-testing-report-schema.json

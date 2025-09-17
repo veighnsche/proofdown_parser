@@ -42,6 +42,14 @@ status:
 - Encourage digest-addressed references for manifests and results to ensure immutability and traceability.
 - Default to collapsed JSON for large result sets; allow optional depth bounds to protect render size limits.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (chaos): ../../.specs/schemas/chaos.schema.json
+
 ## References
 
 - Gremlin: https://www.gremlin.com/docs/

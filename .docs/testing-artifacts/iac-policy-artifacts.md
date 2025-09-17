@@ -57,8 +57,16 @@ Conftest JUnit (excerpt):
 - Keep grammar minimal; treat plans/states and scanner outputs as artifacts ingested as JSON. No Terraform/YAML syntax in Proofdown itself.
 - Standardize rollups via `artifact.table` (rule, severity, resource, count) and diff summaries (added/changed/destroyed) as renderer behavior.
 - Link large plan/state files via `artifact.link`; show compact, redacted JSON previews to keep pages deterministic.
-- Prefer digest-addressed artifacts and default-collapsed JSON for large scans.
-- Parser remains syntax-only; SSG normalizes Checkov/tfsec/Terrascan/Conftest outputs and Terraform JSON into stable summaries.
+    - Prefer digest-addressed artifacts and default-collapsed JSON for large scans.
+    - Parser remains syntax-only; SSG normalizes Checkov/tfsec/Terrascan/Conftest outputs and Terraform JSON into stable summaries.
+
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (iac): ../../.specs/schemas/iac.schema.json
 
 ## References
 
