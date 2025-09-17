@@ -1,0 +1,136 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "Performance & Load",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Summary"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "perf-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Aggregates"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "perf-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "performance"
+                },
+                {
+                  "key": "caption",
+                  "value": "Endpoints"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "jmeter-report.html.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "JMeter HTML dashboard"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Filmstrips"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "home-filmstrip.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Home filmstrip"
+                },
+                {
+                  "key": "max_height",
+                  "value": "480"
+                },
+                {
+                  "key": "caption",
+                  "value": "Home"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

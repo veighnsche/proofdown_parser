@@ -1,0 +1,144 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "Mobile Matrix",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Summary"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "mobile-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Devices and outcomes"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "mobile-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "mobile"
+                },
+                {
+                  "key": "caption",
+                  "value": "Per-device results"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Screenshots"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "ios-failure.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "iOS screenshot"
+                },
+                {
+                  "key": "max_height",
+                  "value": "360"
+                },
+                {
+                  "key": "caption",
+                  "value": "iOS"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "android-failure.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Android screenshot"
+                },
+                {
+                  "key": "max_height",
+                  "value": "360"
+                },
+                {
+                  "key": "caption",
+                  "value": "Android"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

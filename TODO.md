@@ -11,7 +11,7 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
   - [x] Improve paragraph accumulation across lines until blank or a component/heading start
   - [x] Harden component parsing of self-closing tags `<name ... />` and closing `</name>` detection (mismatched names)
   - [x] Attribute parsing: support both quoted and bare values exactly
-  - [ ] Reject malformed key/value pairs with structured errors
+  - [x] Reject malformed key/value pairs with structured errors
   - [x] Introduce depth and node counting during parse to prepare for limits enforcement
   - [x] Enforce default parser limits: depth ≤ 16, nodes ≤ 50k, input ≤ 1 MiB
 - [ ] NEXT: Add validation pass and structured error model
@@ -52,9 +52,9 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
   - [ ] `ParseError` + `ErrorKind` defined and used in parser
   - [ ] CLI/WASM surfaces show structured errors (line, col, kind, msg)
 
-- [ ] M7: Golden tests & determinism gate
-  - [ ] Add golden fixtures and byte-for-byte JSON comparisons
-  - [ ] Error-path fixtures (unterminated/mismatched/over-depth)
+- [x] M7: Golden tests & determinism gate
+  - [x] Add golden fixtures and byte-for-byte JSON comparisons
+  - [x] Error-path fixtures (unterminated/mismatched/over-depth)
 
 ## Parser Work (crates/proofdown_parser)
 
@@ -63,13 +63,13 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
   - [x] Require a single space after `#..####` per grammar; otherwise treat as paragraph
   - [x] Trim trailing spaces; disallow empty titles
 - [ ] Whitespace handling:
-  - [ ] Preserve attribute values exactly (done for bare/quoted)
+  - [x] Preserve attribute values exactly (done for bare/quoted)
   - [ ] Trim block text lines only at edges; avoid collapsing internal spaces
 - [x] Components:
   - [x] Detect mismatched close tags as `Syntax` with best-effort line/col
   - [x] Detect unterminated components with best-effort line/col
   - [x] Support self-closing `<name ... />` accurately
-- [ ] Mixed content inside components: paragraphs and headings supported; consider lists/code fences later
+- [x] Mixed content inside components: paragraphs and headings supported; consider lists/code fences later
 - [ ] Performance: avoid quadratic behavior during scans; prefer single-pass with bounded lookahead
 - [x] API: non-panicking typed errors (replace `anyhow::bail!`) and expose `parse_with_limits` variant
 - [x] Configurable options: `max_depth`, `max_nodes`, `max_input_bytes` via builder or fn args
@@ -112,14 +112,16 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 ## AST and Error Model (`proofdown_ast`)
 
 - [x] Extract `Document`, `Block`, `Component`, `Attr` to `crates/proofdown_ast`
-- [ ] Define `ErrorKind` and `ParseError` with `serde` for stable JSON error reporting
-- [ ] Provide stable `serde` for AST round-tripping in tests
-- [ ] Implement `Display` and error codes for all `ErrorKind` variants
+- [x] Define `ErrorKind` and `ParseError` with `serde` for stable JSON error reporting
+- [x] Provide stable `serde` for AST round-tripping in tests
+- [x] Implement `Display` and error codes for all `ErrorKind` variants
 
 ## WASM Surface (`proofdown_wasm`)
 
 - [x] Create `wasm-bindgen` wrappers: `wasm_parse(input: &str) -> String`
-- [ ] Map `ParseError` to a JS object `{ line, col, kind, msg }`
+- [x] Map `ParseError` to a JS object `{ line, col, kind, msg }`
+- [x] Optimize build size (feature gates, `wasm-opt` in CI)
+- [x] Provide a small example in `examples/wasm` with bundler config
 - [ ] Optimize build size (feature gates, `wasm-opt` in CI)
 - [ ] Provide a small example in `examples/wasm` with bundler config
 
@@ -132,9 +134,9 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 
 ## Testing & Quality
 
-- [ ] Golden tests from `.specs/00_proofdown_parser.md` examples
-- [ ] Determinism tests: parse → serialize JSON → compare
-- [ ] Error-path tests: unknown component, bad nesting, bad attributes, depth exceeded
+- [x] Golden tests from `.specs/00_proofdown_parser.md` examples
+- [x] Determinism tests: parse → serialize JSON → compare
+- [x] Error-path tests: unknown component, bad nesting, bad attributes, depth exceeded
 - [ ] Fuzzing (later): feed random inputs; assert no panics and reasonable error coverage
 - [ ] Benchmarks: large documents; ensure linear or near-linear time behavior
 
@@ -189,14 +191,14 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 
 ## Examples & Fixtures
 
-- [ ] `examples/minimal.pml` demonstrating grid/card/artifact components
+- [x] `examples/minimal.pml` demonstrating grid/card/artifact components
 - [ ] `examples/errors/` with curated malformed inputs and expected errors
 - [ ] `examples/repo_viewers/` gated by feature flag (optional in v1)
 - [ ] `examples/errors/unterminated_component.pml`, `mismatched_close.pml`, `over_depth.pml`
 
 ## Documentation
 
-- [ ] Keep `README.md` aligned with spec and current API surface
+- [x] Keep `README.md` aligned with spec and current API surface
 - [ ] Add module-level rustdoc with grammar highlights and examples
 - [ ] Add `docs/` pages if needed for integration notes (parent workspace guidance)
 - [ ] Add CONTRIBUTING.md and Developer Guide (build, test, run CLI/WASM)

@@ -1,0 +1,34 @@
+{
+  "blocks": [
+    {
+      "attrs": [],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "T"
+            }
+          ],
+          "children": [
+            {
+              "level": 1,
+              "text": "Inside",
+              "type": "Heading"
+            },
+            {
+              "text": "Hello",
+              "type": "Paragraph"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

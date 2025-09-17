@@ -1,0 +1,225 @@
+{
+  "blocks": [
+    {
+      "level": 1,
+      "text": "Build Evidence — {{ commit }}",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "3"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Unit tests"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "tests-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "3"
+                },
+                {
+                  "key": "json_pointer",
+                  "value": "/summary"
+                },
+                {
+                  "key": "caption",
+                  "value": "Aggregated results"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "tests-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "unit_tests"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "status"
+                },
+                {
+                  "key": "caption",
+                  "value": "Suites and cases"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Coverage"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "coverage-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Project coverage"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "coverage-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "coverage"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "coverage-html.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "Open full HTML report"
+                },
+                {
+                  "key": "caption",
+                  "value": "HTML bundle"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Security"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "sarif-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "security"
+                },
+                {
+                  "key": "limit",
+                  "value": "200"
+                },
+                {
+                  "key": "caption",
+                  "value": "Findings by rule"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "sarif.sarif.json"
+                },
+                {
+                  "key": "title",
+                  "value": "Download full SARIF"
+                },
+                {
+                  "key": "download",
+                  "value": "true"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

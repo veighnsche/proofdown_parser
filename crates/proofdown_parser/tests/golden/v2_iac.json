@@ -1,0 +1,132 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "IaC — Terraform & Policy",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Plan preview"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "tf-plan-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Added/changed/destroyed"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "terraform-plan.json"
+                },
+                {
+                  "key": "title",
+                  "value": "Full plan (JSON)"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Policy scan"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "checkov-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "iac"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "severity"
+                },
+                {
+                  "key": "caption",
+                  "value": "Violations by rule"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "checkov-full.json"
+                },
+                {
+                  "key": "title",
+                  "value": "Download full JSON"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

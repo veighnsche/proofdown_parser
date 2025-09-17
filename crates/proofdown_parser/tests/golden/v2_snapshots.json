@@ -1,0 +1,155 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "Snapshots",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "3"
+        },
+        {
+          "key": "gap",
+          "value": "8"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "id",
+              "value": "baseline.png"
+            },
+            {
+              "key": "alt",
+              "value": "baseline"
+            },
+            {
+              "key": "max_height",
+              "value": "240"
+            },
+            {
+              "key": "caption",
+              "value": "baseline"
+            }
+          ],
+          "children": [],
+          "name": "artifact.image",
+          "self_closing": true,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "id",
+              "value": "actual.png"
+            },
+            {
+              "key": "alt",
+              "value": "actual"
+            },
+            {
+              "key": "max_height",
+              "value": "240"
+            },
+            {
+              "key": "caption",
+              "value": "actual"
+            }
+          ],
+          "children": [],
+          "name": "artifact.image",
+          "self_closing": true,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "id",
+              "value": "diff.png"
+            },
+            {
+              "key": "alt",
+              "value": "diff"
+            },
+            {
+              "key": "max_height",
+              "value": "240"
+            },
+            {
+              "key": "caption",
+              "value": "diff"
+            }
+          ],
+          "children": [],
+          "name": "artifact.image",
+          "self_closing": true,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    },
+    {
+      "attrs": [
+        {
+          "key": "title",
+          "value": "Counts"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "id",
+              "value": "snapshot-summary.json"
+            },
+            {
+              "key": "collapsed",
+              "value": "true"
+            },
+            {
+              "key": "depth",
+              "value": "1"
+            },
+            {
+              "key": "caption",
+              "value": "Counts"
+            }
+          ],
+          "children": [],
+          "name": "artifact.json",
+          "self_closing": true,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "id",
+              "value": "snapshot-summary.json"
+            },
+            {
+              "key": "kind",
+              "value": "snapshots"
+            },
+            {
+              "key": "caption",
+              "value": "Changed/added/removed"
+            }
+          ],
+          "children": [],
+          "name": "artifact.table",
+          "self_closing": true,
+          "type": "Component"
+        }
+      ],
+      "name": "card",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

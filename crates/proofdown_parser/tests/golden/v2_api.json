@@ -1,0 +1,128 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "API Collections",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Newman / Karate"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "api-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Collections"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "api-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "api"
+                },
+                {
+                  "key": "caption",
+                  "value": "Requests and status"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Artifacts"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "api-har.har"
+                },
+                {
+                  "key": "title",
+                  "value": "HAR"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "allure-report.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "Allure HTML"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

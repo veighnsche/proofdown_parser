@@ -1,0 +1,136 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "A11y & Visual",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Accessibility"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "a11y-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "a11y"
+                },
+                {
+                  "key": "caption",
+                  "value": "Violations by impact"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "lighthouse-report.html.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "Lighthouse HTML"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Visual diffs"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "login-diff.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Login diff"
+                },
+                {
+                  "key": "max_height",
+                  "value": "480"
+                },
+                {
+                  "key": "caption",
+                  "value": "Login"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "dashboard-diff.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Dashboard diff"
+                },
+                {
+                  "key": "max_height",
+                  "value": "480"
+                },
+                {
+                  "key": "caption",
+                  "value": "Dashboard"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "Accessibility & Visual diffs",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Accessibility (axe-core)"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "axe-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "axe summary"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "axe-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "a11y"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "impact"
+                },
+                {
+                  "key": "caption",
+                  "value": "Violations by rule"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Visual changes"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "visual-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "visual"
+                },
+                {
+                  "key": "caption",
+                  "value": "Changed stories"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "cols",
+                  "value": "3"
+                },
+                {
+                  "key": "gap",
+                  "value": "8"
+                }
+              ],
+              "children": [
+                {
+                  "attrs": [
+                    {
+                      "key": "id",
+                      "value": "login-baseline.png"
+                    },
+                    {
+                      "key": "alt",
+                      "value": "Login baseline"
+                    },
+                    {
+                      "key": "max_height",
+                      "value": "220"
+                    },
+                    {
+                      "key": "caption",
+                      "value": "baseline"
+                    }
+                  ],
+                  "children": [],
+                  "name": "artifact.image",
+                  "self_closing": true,
+                  "type": "Component"
+                },
+                {
+                  "attrs": [
+                    {
+                      "key": "id",
+                      "value": "login-actual.png"
+                    },
+                    {
+                      "key": "alt",
+                      "value": "Login actual"
+                    },
+                    {
+                      "key": "max_height",
+                      "value": "220"
+                    },
+                    {
+                      "key": "caption",
+                      "value": "actual"
+                    }
+                  ],
+                  "children": [],
+                  "name": "artifact.image",
+                  "self_closing": true,
+                  "type": "Component"
+                },
+                {
+                  "attrs": [
+                    {
+                      "key": "id",
+                      "value": "login-diff.png"
+                    },
+                    {
+                      "key": "alt",
+                      "value": "Login diff"
+                    },
+                    {
+                      "key": "max_height",
+                      "value": "220"
+                    },
+                    {
+                      "key": "caption",
+                      "value": "diff"
+                    }
+                  ],
+                  "children": [],
+                  "name": "artifact.image",
+                  "self_closing": true,
+                  "type": "Component"
+                }
+              ],
+              "name": "grid",
+              "self_closing": false,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

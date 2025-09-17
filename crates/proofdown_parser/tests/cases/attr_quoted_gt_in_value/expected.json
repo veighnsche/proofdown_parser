@@ -1,0 +1,11 @@
+{
+  "blocks": [
+    {
+      "type": "Component",
+      "name": "card",
+      "attrs": [ { "key": "title", "value": "A > B" } ],
+      "children": [],
+      "self_closing": false
+    }
+  ]
+}

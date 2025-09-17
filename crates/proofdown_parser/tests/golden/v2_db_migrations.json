@@ -1,0 +1,108 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "Database migrations",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Status"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "migrations-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "db_migrations"
+                },
+                {
+                  "key": "caption",
+                  "value": "Applied/pending/failed"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "SQL snippets"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "migration-001.sql"
+                },
+                {
+                  "key": "max_lines",
+                  "value": "50"
+                },
+                {
+                  "key": "caption",
+                  "value": "001-add-index.sql"
+                }
+              ],
+              "children": [],
+              "name": "artifact.text",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "migrations.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "All migration scripts"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

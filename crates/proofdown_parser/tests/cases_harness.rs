@@ -30,7 +30,8 @@ fn run_case(dir: &Path) -> Result<(), String> {
 
     match proofdown_parser::parse(&input) {
         Ok(doc) => {
-            if expected_err.exists() {
+            // If both files exist, prefer success golden (expected.json)
+            if expected_err.exists() && !expected_ok.exists() {
                 return Err(format!("expected error but parse succeeded for {}", dir.display()));
             }
             let actual = serde_json::to_value(&doc).map_err(|e| e.to_string())?;
@@ -47,6 +48,7 @@ fn run_case(dir: &Path) -> Result<(), String> {
             Ok(())
         }
         Err(err) => {
+            // If both files exist, prefer error golden (expected_error.json)
             if expected_ok.exists() && !expected_err.exists() {
                 return Err(format!("expected success but got error for {}: {:?}", dir.display(), err));
             }

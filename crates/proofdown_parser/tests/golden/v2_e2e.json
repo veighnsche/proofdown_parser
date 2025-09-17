@@ -1,0 +1,172 @@
+{
+  "blocks": [
+    {
+      "level": 2,
+      "text": "E2E — Checkout",
+      "type": "Heading"
+    },
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Results"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "e2e-summary.json"
+                },
+                {
+                  "key": "collapsed",
+                  "value": "true"
+                },
+                {
+                  "key": "depth",
+                  "value": "2"
+                },
+                {
+                  "key": "caption",
+                  "value": "Run summary"
+                }
+              ],
+              "children": [],
+              "name": "artifact.json",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "e2e-summary.json"
+                },
+                {
+                  "key": "kind",
+                  "value": "e2e"
+                }
+              ],
+              "children": [],
+              "name": "artifact.table",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "playwright-report.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "Open HTML report"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "playwright-trace.zip"
+                },
+                {
+                  "key": "title",
+                  "value": "Download trace.zip"
+                }
+              ],
+              "children": [],
+              "name": "artifact.link",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "Screenshots"
+            }
+          ],
+          "children": [
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "checkout-step3-diff.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Checkout diff"
+                },
+                {
+                  "key": "max_height",
+                  "value": "480"
+                },
+                {
+                  "key": "caption",
+                  "value": "Step 3"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            },
+            {
+              "attrs": [
+                {
+                  "key": "id",
+                  "value": "order-summary-diff.png"
+                },
+                {
+                  "key": "alt",
+                  "value": "Summary diff"
+                },
+                {
+                  "key": "max_height",
+                  "value": "480"
+                },
+                {
+                  "key": "caption",
+                  "value": "Summary"
+                }
+              ],
+              "children": [],
+              "name": "artifact.image",
+              "self_closing": true,
+              "type": "Component"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}
