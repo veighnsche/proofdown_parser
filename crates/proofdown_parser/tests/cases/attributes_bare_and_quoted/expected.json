@@ -1,0 +1,20 @@
+{
+  "blocks": [
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "3"
+        },
+        {
+          "key": "gap",
+          "value": "16"
+        }
+      ],
+      "children": [],
+      "name": "grid",
+      "self_closing": true,
+      "type": "Component"
+    }
+  ]
+}

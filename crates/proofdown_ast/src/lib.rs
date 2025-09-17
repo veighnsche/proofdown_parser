@@ -9,7 +9,7 @@ pub struct Document {
 #[serde(tag = "type")]
 pub enum Block {
     Heading { level: u8, text: String },
-    Paragraph(String),
+    Paragraph { text: String },
     Component(Component),
 }
 

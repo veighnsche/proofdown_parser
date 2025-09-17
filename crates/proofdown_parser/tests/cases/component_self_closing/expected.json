@@ -1,0 +1,16 @@
+{
+  "blocks": [
+    {
+      "attrs": [
+        {
+          "key": "id",
+          "value": "x"
+        }
+      ],
+      "children": [],
+      "name": "artifact.summary",
+      "self_closing": true,
+      "type": "Component"
+    }
+  ]
+}

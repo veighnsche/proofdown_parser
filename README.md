@@ -270,6 +270,48 @@ Note: These are the component names used downstream by the SSG. The parser recog
 - 1.2:
   - Includes with cycle detection and base path policy.
 
+## Testing
+
+- Unit tests live under each crate's `tests/` directory.
+- The parser crate (`proofdown_parser`) includes smoke tests and golden tests.
+
+### Case-based Parser Test Harness
+
+Location: `crates/proofdown_parser/tests/cases_harness.rs`
+
+- The harness discovers case directories under `crates/proofdown_parser/tests/cases/`.
+- Each case is a directory containing at least `input.pml` and one of:
+  - `expected.json` if parsing should succeed, containing the AST JSON structure
+  - `expected_error.json` if parsing should fail, containing the structured error JSON `{ line, col, kind, msg }`
+
+Run all cases:
+
+```bash
+cargo test -p proofdown_parser --test cases_harness
+```
+
+Update or create goldens automatically (writes expected files):
+
+```bash
+UPDATE_GOLDEN=1 cargo test -p proofdown_parser --test cases_harness
+```
+
+Add a new case:
+
+1. Create a new folder under `crates/proofdown_parser/tests/cases/<case_name>/`.
+2. Add `input.pml` with the test document content.
+3. Run with `UPDATE_GOLDEN=1` to generate `expected.json` (success) or `expected_error.json` (error), or write them manually.
+4. Re-run tests normally to verify.
+
+Seeded examples include:
+
+- `heading_basic`, `heading_no_space`
+- `paragraph_multi_line`
+- `component_self_closing`, `component_nested`
+- `attrs_malformed_token`
+- `error_unterminated_component`, `error_mismatched_close`
+- `limits_depth_exceeded`
+
 ## Building
 
 Build and test the parser crate:

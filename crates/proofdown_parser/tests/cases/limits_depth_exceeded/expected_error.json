@@ -1,0 +1,6 @@
+{
+  "col": 1,
+  "kind": "LimitExceeded",
+  "line": 1,
+  "msg": "depth exceeded: 18 > 16"
+}

@@ -53,7 +53,7 @@ pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document>
           // Treat the entire line as paragraph
           let mut j2 = i; while j2 < bytes.len() && bytes[j2] != b'\n' { j2 += 1; }
           let line = input[i..j2].trim();
-          if !line.is_empty() { blocks.push(Block::Paragraph(line.to_string())); }
+          if !line.is_empty() { blocks.push(Block::Paragraph { text: line.to_string() }); }
           i = j2 + (j2 < bytes.len()) as usize; continue;
       }
       if bytes[i] == b'<' {
@@ -80,7 +80,7 @@ pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document>
           // If next line begins a component or heading, stop accumulating
           if bytes[i] == b'<' || bytes[i] == b'#' { break; }
       }
-      if !para.is_empty() { blocks.push(Block::Paragraph(para)); }
+      if !para.is_empty() { blocks.push(Block::Paragraph { text: para }); }
   }
   let doc = Document { blocks };
     // Enforce depth and node limits post-parse (defaults for now; configurable in follow-up API)
@@ -152,15 +152,15 @@ fn parse_component(full: &str, base: usize) -> PResult<(Component, usize)> {
                 let mut level = 0u8; let mut idx = 0; for b in line.as_bytes() { if *b == b'#' && level < 4 { level += 1; idx += 1; } else { break; } }
                 if idx < line.len() && line.as_bytes()[idx] == b' ' {
                     let text = line[idx+1..].trim();
-                    if !text.is_empty() { children.push(Block::Heading { level, text: text.to_string() }); } else { children.push(Block::Paragraph(line.trim().to_string())); }
+                    if !text.is_empty() { children.push(Block::Heading { level, text: text.to_string() }); } else { children.push(Block::Paragraph { text: line.trim().to_string() }); }
                 } else {
                     // Not a valid heading; keep as paragraph line
-                    children.push(Block::Paragraph(line.trim().to_string()));
+                    children.push(Block::Paragraph { text: line.trim().to_string() });
                 }
                 used += end + 1;
             } else {
                 let mut end = remain.find('<').unwrap_or(remain.len()); if let Some(nl) = remain.find('\n') { end = end.min(nl); }
-                let text = remain[..end].trim().to_string(); if !text.is_empty() { children.push(Block::Paragraph(text)); }
+                let text = remain[..end].trim().to_string(); if !text.is_empty() { children.push(Block::Paragraph { text }); }
                 used += end;
             }
         }

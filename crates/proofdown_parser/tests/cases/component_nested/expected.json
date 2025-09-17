@@ -1,0 +1,51 @@
+{
+  "blocks": [
+    {
+      "attrs": [
+        {
+          "key": "cols",
+          "value": "2"
+        }
+      ],
+      "children": [
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "A"
+            }
+          ],
+          "children": [
+            {
+              "text": "Hello",
+              "type": "Paragraph"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        },
+        {
+          "attrs": [
+            {
+              "key": "title",
+              "value": "B"
+            }
+          ],
+          "children": [
+            {
+              "text": "# Heading inside",
+              "type": "Paragraph"
+            }
+          ],
+          "name": "card",
+          "self_closing": false,
+          "type": "Component"
+        }
+      ],
+      "name": "grid",
+      "self_closing": false,
+      "type": "Component"
+    }
+  ]
+}

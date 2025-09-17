@@ -1,0 +1,6 @@
+{
+  "col": 1,
+  "kind": "Syntax",
+  "line": 1,
+  "msg": "malformed attribute near 'cols': expected key=value"
+}
