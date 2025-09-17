@@ -4,6 +4,14 @@ This directory catalogs common testing artifacts across languages, frameworks, a
 
 Use it as a reference when mapping CI outputs to Proofdown viewers.
 
+## Related specs and guides
+
+- Proofdown v1 grammar: [../../.specs/01_proofdown_language_v1.md](../../.specs/01_proofdown_language_v1.md)
+- Artifact-first semantics: [../../.specs/02_artifact_first_language_spec.md](../../.specs/02_artifact_first_language_spec.md)
+- Proofdown v2 (additive): [../../.specs/03_proofdown_language_v2.md](../../.specs/03_proofdown_language_v2.md)
+- Authoring guide: [../proofdown-authoring-guide.md](../proofdown-authoring-guide.md)
+- Table schemas (JSON): [../../.specs/schemas/](../../.specs/schemas/)
+
 ## Index
 
 - [Unit test results](./unit-test-results.md)
@@ -22,10 +30,10 @@ Use it as a reference when mapping CI outputs to Proofdown viewers.
 - [Mutation testing](./mutation-testing-artifacts.md)
 - [Snapshot testing](./snapshot-testing-artifacts.md)
 - [Supply chain: SBOM & provenance](./sbom-provenance-artifacts.md)
- - [Chaos & resilience testing](./chaos-resilience-artifacts.md)
- - [Data quality & ML testing](./data-quality-ml-artifacts.md)
- - [IaC & policy-as-code](./iac-policy-artifacts.md)
- - [Database migration testing](./database-migration-artifacts.md)
+- [Chaos & resilience testing](./chaos-resilience-artifacts.md)
+- [Data quality & ML testing](./data-quality-ml-artifacts.md)
+- [IaC & policy-as-code](./iac-policy-artifacts.md)
+- [Database migration testing](./database-migration-artifacts.md)
 
 ## Proofdown viewer mapping (quick guide)
 
@@ -36,4 +44,3 @@ Use it as a reference when mapping CI outputs to Proofdown viewers.
 - Binary/HTML bundles or non-supported types → `artifact.link` (download), or render screenshots/JSON summaries alongside
 
 When possible, prefer digest-addressed JSON, CSV, and text formats over HTML for deterministic, safe rendering.
-

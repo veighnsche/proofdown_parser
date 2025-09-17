@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: snapshots",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {"type": "string"},
+          "added": {"type": "integer", "minimum": 0},
+          "changed": {"type": "integer", "minimum": 0},
+          "removed": {"type": "integer", "minimum": 0}
+        },
+        "required": ["file"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

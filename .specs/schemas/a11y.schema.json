@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: a11y",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule": {"type": "string"},
+          "impact": {"type": "string", "enum": ["critical", "serious", "moderate", "minor"]},
+          "nodes_count": {"type": "integer", "minimum": 0},
+          "page": {"type": ["string", "null"]}
+        },
+        "required": ["rule", "impact", "nodes_count"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

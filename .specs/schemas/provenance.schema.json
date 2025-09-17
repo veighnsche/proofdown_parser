@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: provenance",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "subject": {"type": "string"},
+          "sha256": {"type": "string"},
+          "builder": {"type": ["string", "null"]},
+          "buildType": {"type": ["string", "null"]}
+        },
+        "required": ["subject", "sha256"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

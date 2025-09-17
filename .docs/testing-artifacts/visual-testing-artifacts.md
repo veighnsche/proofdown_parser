@@ -38,6 +38,14 @@ Visual testing detects unintended UI changes by comparing snapshots (images or D
 - Images can be large; recommend `max_height` attribute on `artifact.image` and thumbnail-first strategies in renderer.
 - Trace archives (Playwright) should be treated as opaque files; interactive viewing occurs outside Proofdown via allowlisted viewers.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (visual): ../../.specs/schemas/visual.schema.json
+
 ## References
 
 - Applitools Eyes: https://applitools.com/platform/eyes/

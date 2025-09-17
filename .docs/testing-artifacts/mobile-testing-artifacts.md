@@ -10,6 +10,7 @@ Mobile test frameworks produce a mix of binary result bundles, JUnit XML, screen
 - Coverage: Xcode/LLVM coverage (exportable as profdata → HTML/JSON via llvm-cov)
 
 Typical files:
+
 - `Test.xcresult` bundle
 - Derived JUnit XML: `TEST-*.xml`
 - Screenshots: PNG files attached to steps
@@ -40,8 +41,16 @@ Typical files:
 - Prefer digest-addressed artifacts to avoid path drift between device matrix runs.
 - Keep renderer-side behavior (collapse, paging) implementation-specific; the language grammar stays minimal.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (mobile): ../../.specs/schemas/mobile.schema.json
+
 ## References
 
-- XCTest: https://developer.apple.com/documentation/xctest
-- AndroidJUnitRunner: https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner
-- Appium JUnit reports: https://www.browserstack.com/docs/test-management/upload-reports-cli/frameworks/appium
+- XCTest: <https://developer.apple.com/documentation/xctest>
+- AndroidJUnitRunner: <https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner>
+- Appium JUnit reports: <https://www.browserstack.com/docs/test-management/upload-reports-cli/frameworks/appium>

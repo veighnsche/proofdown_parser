@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: visual",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "story": {"type": ["string", "null"]},
+          "spec": {"type": ["string", "null"]},
+          "status": {"type": "string"},
+          "mismatch_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+          "changed": {"type": ["boolean", "null"]}
+        },
+        "required": ["status"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

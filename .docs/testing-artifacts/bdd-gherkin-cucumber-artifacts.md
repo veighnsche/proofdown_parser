@@ -50,6 +50,14 @@ Cucumber JSON (schema evolves; example excerpt):
 - Attach step-level screenshots with `artifact.image` inside a `grid`/`card` layout; no new block types needed.
 - Enforce digest-addressed references and collapsed JSON by default for large suites.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (bdd): ../../.specs/schemas/bdd.schema.json
+
 ## References
 
 - Gherkin reference: https://cucumber.io/docs/gherkin/reference/

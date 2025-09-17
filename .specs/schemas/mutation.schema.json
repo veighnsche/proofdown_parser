@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: mutation",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {"type": "string"},
+          "killed": {"type": "integer", "minimum": 0},
+          "survived": {"type": "integer", "minimum": 0},
+          "score": {"type": ["number", "null"], "minimum": 0, "maximum": 100}
+        },
+        "required": ["file"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

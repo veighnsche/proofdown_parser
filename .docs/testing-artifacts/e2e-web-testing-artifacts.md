@@ -40,6 +40,14 @@ End-to-end (E2E) tests drive a real browser to validate end-user flows. Artifact
 - Treat traces (`trace.zip`) and videos as opaque via `artifact.link`; any interactive viewer is allowlisted outside the language grammar.
 - Enforce content-addressed artifact references; language stays minimal while SSG normalizes tool-specific formats to JSON.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (e2e): ../../.specs/schemas/e2e.schema.json
+
 ## References
 
 - Cypress reporters: https://docs.cypress.io/app/tooling/reporters

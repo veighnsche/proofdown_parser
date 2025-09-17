@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: iac",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule": {"type": "string"},
+          "severity": {"type": "string"},
+          "resource": {"type": "string"},
+          "file": {"type": ["string", "null"]}
+        },
+        "required": ["rule", "severity", "resource"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

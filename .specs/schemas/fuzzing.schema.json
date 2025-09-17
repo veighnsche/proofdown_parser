@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: fuzzing",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "target": {"type": "string"},
+          "crashes": {"type": "integer", "minimum": 0},
+          "hangs": {"type": "integer", "minimum": 0},
+          "coverage_pct": {"type": ["number", "null"], "minimum": 0, "maximum": 100}
+        },
+        "required": ["target"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

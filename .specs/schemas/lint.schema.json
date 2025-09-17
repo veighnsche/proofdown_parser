@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: lint",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule": {"type": "string"},
+          "severity": {"type": "string"},
+          "file": {"type": "string"},
+          "count": {"type": ["integer", "null"], "minimum": 0}
+        },
+        "required": ["rule", "severity", "file"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

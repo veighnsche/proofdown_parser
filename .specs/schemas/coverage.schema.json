@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: coverage",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "package": {"type": "string"},
+          "file": {"type": ["string", "null"]},
+          "lines_pct": {"type": "number", "minimum": 0, "maximum": 100},
+          "branches_pct": {"type": "number", "minimum": 0, "maximum": 100}
+        },
+        "required": ["package", "lines_pct"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

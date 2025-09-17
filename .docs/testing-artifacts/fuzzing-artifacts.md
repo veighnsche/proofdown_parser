@@ -44,6 +44,14 @@ findings/
 - No new syntax needed: use existing components (`artifact.json`, `artifact.link`, `artifact.markdown`) with bounds like `collapsed=true`.
 - Enforce digest-addressed artifacts to guarantee reproducibility across fuzzing runs.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (fuzzing): ../../.specs/schemas/fuzzing.schema.json
+
 ## References
 
 - AFL docs: <https://afl-1.readthedocs.io/en/latest/fuzzing.html>

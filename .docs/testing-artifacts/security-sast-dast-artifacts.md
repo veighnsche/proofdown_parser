@@ -15,7 +15,9 @@ Security testing artifacts include static code analysis findings, dynamic applic
 - HTML/PDF dashboards (for human browsing)
 
 Examples:
+
 - SARIF excerpt:
+
 ```json
 {
   "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
@@ -25,6 +27,7 @@ Examples:
 ```
 
 - ZAP JSON excerpt:
+
 ```json
 { "site": [{ "alerts": [{ "name": "X-Content-Type-Options Header Missing", "risk": "Low" }]}] }
 ```
@@ -43,12 +46,20 @@ Examples:
 - Keep parser syntax-only; normalization from SARIF/tool JSON into summaries happens in SSG/validator.
 - Prefer digest-addressed artifacts to ensure immutability and verifiability.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (security): ../../.specs/schemas/security.schema.json
+
 ## References
 
-- SARIF support (GitHub): https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning
-- Trivy reporting: https://trivy.dev/latest/docs/configuration/reporting/
-- Grype outputs: https://github.com/anchore/grype
-- OWASP ZAP report formats: https://www.zaproxy.org/docs/desktop/addons/report-generation/report-traditional-json/
-- Semgrep: https://semgrep.dev/docs/
-- CodeQL: https://codeql.github.com/docs/
-- SonarQube analysis: https://docs.sonarsource.com/
+- SARIF support (GitHub): <https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning>
+- Trivy reporting: <https://trivy.dev/latest/docs/configuration/reporting/>
+- Grype outputs: <https://github.com/anchore/grype>
+- OWASP ZAP report formats: <https://www.zaproxy.org/docs/desktop/addons/report-generation/report-traditional-json/>
+- Semgrep: <https://semgrep.dev/docs/>
+- CodeQL: <https://codeql.github.com/docs/>
+- SonarQube analysis: <https://docs.sonarsource.com/>

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: db_migrations",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "migration_id": {"type": "string"},
+          "description": {"type": ["string", "null"]},
+          "state": {"type": "string"},
+          "duration_ms": {"type": ["number", "null"], "minimum": 0}
+        },
+        "required": ["migration_id", "state"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

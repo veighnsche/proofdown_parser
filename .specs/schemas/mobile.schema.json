@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: mobile",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device": {"type": "string"},
+          "test": {"type": "string"},
+          "status": {"type": "string", "enum": ["passed", "failed", "skipped"]},
+          "duration_ms": {"type": ["number", "null"], "minimum": 0}
+        },
+        "required": ["device", "test", "status"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

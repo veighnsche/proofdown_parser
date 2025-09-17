@@ -4,6 +4,14 @@ Status: v1.0.0-draft (normative for language behavior; parser and SSG may partit
 
 Audience: language authors, parser implementers, SSG/renderers, and AI systems authoring Proofdown.
 
+## Related documents
+
+- v2 Spec (additive): [03_proofdown_language_v2.md](./03_proofdown_language_v2.md)
+- Artifact-first semantics: [02_artifact_first_language_spec.md](./02_artifact_first_language_spec.md)
+- Authoring guide (LLM-friendly): [../.docs/proofdown-authoring-guide.md](../.docs/proofdown-authoring-guide.md)
+- Testing artifacts catalog: [../.docs/testing-artifacts/README.md](../.docs/testing-artifacts/README.md)
+- Table schemas (JSON): [./schemas/](./schemas/)
+
 ## 1. Purpose and design goals
 
 Proofdown is a minimal, deterministic, and safe markup optimized to present verifiable testing evidence. It is designed to be easily authored by AI while remaining predictable and reviewable by humans.

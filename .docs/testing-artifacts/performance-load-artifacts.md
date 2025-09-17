@@ -30,12 +30,14 @@ Performance artifacts capture latency, throughput, error rates, and resource con
 ## Examples
 
 JMeter CSV (excerpt):
+
 ```
 timeStamp,elapsed,label,responseCode,success,bytes
 1694800000000,123,GET /api/users,200,true,532
 ```
 
 k6 JSON (excerpt):
+
 ```json
 { "type": "Point", "metric": "http_req_duration", "data": { "value": 120.3 } }
 ```
@@ -55,10 +57,18 @@ k6 JSON (excerpt):
 - Lighthouse and other HTML bundles should not be embedded; link bundles and present a small JSON summary to keep output safe.
 - Keep parser syntax-only; normalization to common JSON is an SSG responsibility.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (performance): ../../.specs/schemas/performance.schema.json
+
 ## References
 
-- JMeter JTL: https://cwiki.apache.org/confluence/display/jmeter/JtlFiles
-- Gatling reports: https://docs.gatling.io/reference/stats/reports/
-- k6 results output: https://grafana.com/docs/k6/latest/get-started/results-output/
-- Lighthouse JSON output: https://developer.chrome.com/docs/lighthouse/overview/
-- WebPageTest API: https://docs.webpagetest.org/api/reference/
+- JMeter JTL: <https://cwiki.apache.org/confluence/display/jmeter/JtlFiles>
+- Gatling reports: <https://docs.gatling.io/reference/stats/reports/>
+- k6 results output: <https://grafana.com/docs/k6/latest/get-started/results-output/>
+- Lighthouse JSON output: <https://developer.chrome.com/docs/lighthouse/overview/>
+- WebPageTest API: <https://docs.webpagetest.org/api/reference/>

@@ -53,6 +53,14 @@ Unit test runners across languages produce machine-readable reports that CI syst
 - Encourage digest-addressed artifacts (`id` → Index digest) to avoid path drift; parser stays syntax-only.
 - Large attachments/logs should use `artifact.link`; avoid inlining large text to respect size limits and deterministic rendering.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (unit_tests): ../../.specs/schemas/unit_tests.schema.json
+
 ## References
 
 - JUnit XML format overview: https://github.com/testmoapp/junitxml

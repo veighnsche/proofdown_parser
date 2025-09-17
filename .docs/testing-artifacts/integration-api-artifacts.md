@@ -50,6 +50,14 @@ Integration and API tests validate service contracts, workflows, and data exchan
 - Allow redacted examples in `artifact.json` to show representative request/response bodies; keep full artifacts behind `artifact.link`.
 - Enforce digest-addressed artifacts and default-collapsed JSON for large suites.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (api): ../../.specs/schemas/api.schema.json
+
 ## References
 
 - Newman built-in reporters: https://learning.postman.com/docs/collections/using-newman-cli/newman-built-in-reporters/

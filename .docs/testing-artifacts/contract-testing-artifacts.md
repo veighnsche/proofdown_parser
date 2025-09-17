@@ -47,6 +47,14 @@ Contract tests ensure that services communicate according to an agreed contract 
 - Encourage digest-addressed contract files and verification outputs for immutability and traceability.
 - Parser stays syntax-only; SSG performs normalization (e.g., pact schema versions) into stable JSON summaries.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (contracts): ../../.specs/schemas/contracts.schema.json
+
 ## References
 
 - Pact specification: https://github.com/pact-foundation/pact-specification

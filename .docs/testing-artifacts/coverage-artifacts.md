@@ -66,6 +66,14 @@ Istanbul summary JSON (excerpt):
 - Do not interpret tool-specific formats at parse time; the parser remains syntax-only. Normalization to a common JSON shape happens in the SSG.
 - Prefer digest-addressed artifacts to prevent drift when reports are regenerated.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (coverage): ../../.specs/schemas/coverage.schema.json
+
 ## References
 
 - LCOV format (gcovr): https://gcovr.com/en/stable/output/lcov.html

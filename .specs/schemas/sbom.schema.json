@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: sbom",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ecosystem": {"type": "string"},
+          "package": {"type": "string"},
+          "version": {"type": ["string", "null"]},
+          "license": {"type": ["string", "null"]},
+          "severity_counts": {"type": ["object", "null"]}
+        },
+        "required": ["ecosystem", "package"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

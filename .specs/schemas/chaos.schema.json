@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: chaos",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "experiment": {"type": "string"},
+          "target": {"type": "string"},
+          "hypothesis": {"type": ["string", "null"]},
+          "verdict": {"type": "string", "enum": ["Pass", "Fail", "Inconclusive"]}
+        },
+        "required": ["experiment", "target", "verdict"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

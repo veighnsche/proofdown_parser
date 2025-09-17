@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proofdown Table Rows: contracts",
+  "type": "object",
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "provider": {"type": "string"},
+          "path": {"type": "string"},
+          "method": {"type": "string"},
+          "verification_status": {"type": "string"}
+        },
+        "required": ["provider", "path", "method", "verification_status"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": ["rows"],
+  "additionalProperties": false
+}

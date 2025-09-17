@@ -57,6 +57,14 @@ Checkstyle XML (excerpt):
 - Keep parser syntax-only; SSGs normalize tool formats (ESLint JSON, Checkstyle XML, SARIF) to summaries.
 - Encourage digest-addressed artifacts (immutable) to ensure verifiable evidence.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (lint): ../../.specs/schemas/lint.schema.json
+
 ## References
 
 - ESLint formatters: https://eslint.org/docs/latest/use/formatters/

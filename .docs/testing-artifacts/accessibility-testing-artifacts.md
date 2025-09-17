@@ -44,6 +44,14 @@ axe-core JSON (excerpt):
 - Large violation sets should default to collapsed JSON with optional `depth`; screenshots should be bounded with `max_height`.
 - Maintain minimal grammar; the parser remains syntax-only while SSG normalizes axe/Lighthouse/Pa11y outputs.
 
+## Related specs and schemas
+
+- Proofdown v1 grammar: ../../.specs/01_proofdown_language_v1.md
+- Artifact-first semantics: ../../.specs/02_artifact_first_language_spec.md
+- Proofdown v2 (additive): ../../.specs/03_proofdown_language_v2.md
+- Authoring guide: ../proofdown-authoring-guide.md
+- Table schema (a11y): ../../.specs/schemas/a11y.schema.json
+
 ## References
 
 - axe-core API: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md
