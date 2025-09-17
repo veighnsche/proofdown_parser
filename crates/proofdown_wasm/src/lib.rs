@@ -3,8 +3,8 @@
 #[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-use proofdown_parser::parse;
 use proofdown_ast::Document;
+use proofdown_parser::parse;
 
 #[cfg_attr(feature = "wasm", wasm_bindgen)]
 pub fn wasm_parse(input: &str) -> String {

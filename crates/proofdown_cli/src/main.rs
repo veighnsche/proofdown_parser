@@ -18,8 +18,14 @@ fn main() -> Result<()> {
     // Top-level flags
     if args.len() == 1 {
         match args[0].as_str() {
-            "--help" | "-h" => { println!("{}", usage()); return Ok(()); }
-            "--version" | "-V" => { println!("{}", env!("CARGO_PKG_VERSION")); return Ok(()); }
+            "--help" | "-h" => {
+                println!("{}", usage());
+                return Ok(());
+            }
+            "--version" | "-V" => {
+                println!("{}", env!("CARGO_PKG_VERSION"));
+                return Ok(());
+            }
             _ => {}
         }
     }
@@ -48,9 +54,12 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
         Err(e) => {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}))?
+                    serde_json::to_string_pretty(
+                        &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
+                    )?
                 } else {
-                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}).to_string()
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
+                        .to_string()
                 };
                 eprintln!("{}", payload);
             } else {
@@ -81,13 +90,24 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
         Err(e) => {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}))?
+                    serde_json::to_string_pretty(
+                        &json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}),
+                    )?
                 } else {
                     json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}).to_string()
                 };
                 eprintln!("{}", payload);
             } else {
-                eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+                eprintln!(
+                    "Parse error at {}:{} [{}]: {}",
+                    e.line,
+                    e.col,
+                    match e.kind {
+                        proofdown_ast::ErrorKind::Syntax => "Syntax",
+                        proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded",
+                    },
+                    e.msg
+                );
             }
             std::process::exit(1);
         }
@@ -108,9 +128,12 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
         Err(e) => {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}))?
+                    serde_json::to_string_pretty(
+                        &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
+                    )?
                 } else {
-                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}).to_string()
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
+                        .to_string()
                 };
                 eprintln!("{}", payload);
             } else {
@@ -124,23 +147,42 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
         Err(e) => {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}))?
+                    serde_json::to_string_pretty(
+                        &json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}),
+                    )?
                 } else {
                     json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}).to_string()
                 };
                 eprintln!("{}", payload);
             } else {
-                eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+                eprintln!(
+                    "Parse error at {}:{} [{}]: {}",
+                    e.line,
+                    e.col,
+                    match e.kind {
+                        proofdown_ast::ErrorKind::Syntax => "Syntax",
+                        proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded",
+                    },
+                    e.msg
+                );
             }
             std::process::exit(1);
         }
     };
-    let limits = lims.map(|l| Limits { max_depth: l.max_depth, max_nodes: l.max_nodes, max_input_bytes: l.max_input_bytes }).unwrap_or_default();
+    let limits = lims
+        .map(|l| Limits {
+            max_depth: l.max_depth,
+            max_nodes: l.max_nodes,
+            max_input_bytes: l.max_input_bytes,
+        })
+        .unwrap_or_default();
     if let Err(e) = validate(&doc, Some(&limits)) {
         if json {
             // map to a generic JSON error payload
             let payload = if pretty {
-                serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": e.code(), "msg": e.to_string()}}))?
+                serde_json::to_string_pretty(
+                    &json!({"ok": false, "err": {"code": e.code(), "msg": e.to_string()}}),
+                )?
             } else {
                 json!({"ok": false, "err": {"code": e.code(), "msg": e.to_string()}}).to_string()
             };
@@ -151,7 +193,11 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
         std::process::exit(2);
     } else {
         if json {
-            let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": true}))? } else { json!({"ok": true}).to_string() };
+            let payload = if pretty {
+                serde_json::to_string_pretty(&json!({"ok": true}))?
+            } else {
+                json!({"ok": true}).to_string()
+            };
             println!("{}", payload);
         } else {
             println!("OK");
@@ -165,12 +211,25 @@ fn parse_limits_flags(args: &[String]) -> Option<ParserLimits> {
     let mut seen = false;
     for a in args {
         if let Some(v) = a.strip_prefix("--limits.depth=") {
-            if let Ok(n) = v.parse::<usize>() { out.max_depth = n; seen = true; }
+            if let Ok(n) = v.parse::<usize>() {
+                out.max_depth = n;
+                seen = true;
+            }
         } else if let Some(v) = a.strip_prefix("--limits.nodes=") {
-            if let Ok(n) = v.parse::<usize>() { out.max_nodes = n; seen = true; }
+            if let Ok(n) = v.parse::<usize>() {
+                out.max_nodes = n;
+                seen = true;
+            }
         } else if let Some(v) = a.strip_prefix("--limits.input-size=") {
-            if let Ok(n) = v.parse::<usize>() { out.max_input_bytes = n; seen = true; }
+            if let Ok(n) = v.parse::<usize>() {
+                out.max_input_bytes = n;
+                seen = true;
+            }
         }
     }
-    if seen { Some(out) } else { None }
+    if seen {
+        Some(out)
+    } else {
+        None
+    }
 }

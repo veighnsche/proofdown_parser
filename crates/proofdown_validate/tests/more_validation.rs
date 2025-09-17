@@ -1,12 +1,22 @@
 use proofdown_ast::{Attr, Block, Component, Document};
 use proofdown_validate::{validate, Limits, ValidateError};
 
-fn doc_with(comp: Component) -> Document { Document { blocks: vec![Block::Component(comp)] } }
+fn doc_with(comp: Component) -> Document {
+    Document {
+        blocks: vec![Block::Component(comp)],
+    }
+}
 
 fn comp(name: &str, attrs: &[(&str, &str)]) -> Component {
     Component {
         name: name.to_string(),
-        attrs: attrs.iter().map(|(k,v)| Attr { key: (*k).into(), value: (*v).into() }).collect(),
+        attrs: attrs
+            .iter()
+            .map(|(k, v)| Attr {
+                key: (*k).into(),
+                value: (*v).into(),
+            })
+            .collect(),
         children: vec![],
         self_closing: true,
     }
@@ -64,5 +74,6 @@ fn link_download_type_errors() {
 #[test]
 fn repo_viewers_are_accepted() {
     let c = comp("repo.code", &[("path", "src/lib.rs")]);
-    validate(&doc_with(c), Some(&Limits::default())).expect("repo viewers are accepted with minimal checks");
+    validate(&doc_with(c), Some(&Limits::default()))
+        .expect("repo viewers are accepted with minimal checks");
 }

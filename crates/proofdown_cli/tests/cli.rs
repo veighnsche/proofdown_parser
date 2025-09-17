@@ -1,25 +1,31 @@
 use assert_cmd::prelude::*;
 use predicates::prelude::*;
-use std::process::Command;
 use std::fs;
+use std::process::Command;
 use tempfile::NamedTempFile;
 
 #[test]
 fn help_and_version_work() {
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("--help");
-    cmd.assert().success().stdout(predicate::str::contains("Usage:"));
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("Usage:"));
 
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("--version");
-    cmd.assert().success().stdout(predicate::str::is_match(r"\d+\.\d+\.\d+").unwrap());
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::is_match(r"\d+\.\d+\.\d+").unwrap());
 }
 
 #[test]
 fn parse_file_not_found_json() {
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("parse").arg("/no/such/file.pml").arg("--json");
-    cmd.assert().failure().stderr(predicate::str::contains("\"code\":\"IO\""));
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains("\"code\":\"IO\""));
 }
 
 #[test]
@@ -30,7 +36,9 @@ fn parse_non_utf8() {
     fs::write(tmp.path(), bytes).expect("write");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("parse").arg(tmp.path()).arg("--json");
-    cmd.assert().failure().stderr(predicate::str::contains("\"code\":\"IO\""));
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains("\"code\":\"IO\""));
 }
 
 #[test]
@@ -38,12 +46,15 @@ fn parse_json_error_payload_shape() {
     let mut tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), "<card title=\"unterminated>").expect("write");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
-    cmd.arg("parse").arg(tmp.path()).arg("--json").arg("--pretty");
+    cmd.arg("parse")
+        .arg(tmp.path())
+        .arg("--json")
+        .arg("--pretty");
     cmd.assert().failure().stderr(
         predicate::str::contains("\"ok\": false")
             .and(predicate::str::contains("\"code\": \"Syntax\""))
             .and(predicate::str::contains("\"line\":"))
-            .and(predicate::str::contains("\"col\":"))
+            .and(predicate::str::contains("\"col\":")),
     );
 }
 
@@ -52,9 +63,12 @@ fn validate_json_error_payload_shape() {
     let mut tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), "<foo id=\"x\" />").expect("write");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
-    cmd.arg("validate").arg(tmp.path()).arg("--json").arg("--pretty");
+    cmd.arg("validate")
+        .arg(tmp.path())
+        .arg("--json")
+        .arg("--pretty");
     cmd.assert().failure().stderr(
-        predicate::str::contains("\"ok\": false").and(predicate::str::contains("\"code\":"))
+        predicate::str::contains("\"ok\": false").and(predicate::str::contains("\"code\":")),
     );
 }
 
@@ -66,8 +80,16 @@ fn parse_crlf_json_parity() {
     fs::write(tmp1.path(), lf).expect("write");
     let tmp2 = NamedTempFile::new().expect("tmp2");
     fs::write(tmp2.path(), crlf).expect("write");
-    let out1 = Command::cargo_bin("pml").expect("bin").args(["parse", tmp1.path().to_str().unwrap(), "--json"]).output().expect("run");
-    let out2 = Command::cargo_bin("pml").expect("bin").args(["parse", tmp2.path().to_str().unwrap(), "--json"]).output().expect("run");
+    let out1 = Command::cargo_bin("pml")
+        .expect("bin")
+        .args(["parse", tmp1.path().to_str().unwrap(), "--json"])
+        .output()
+        .expect("run");
+    let out2 = Command::cargo_bin("pml")
+        .expect("bin")
+        .args(["parse", tmp2.path().to_str().unwrap(), "--json"])
+        .output()
+        .expect("run");
     assert!(out1.status.success());
     assert!(out2.status.success());
     let v1: serde_json::Value = serde_json::from_slice(&out1.stdout).expect("json1");
@@ -80,33 +102,44 @@ fn parse_json_pretty_ok() {
     assert!(fixture.exists(), "fixture missing: {}", fixture.display());
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("parse").arg(fixture).arg("--json").arg("--pretty");
-    cmd.assert().success().stdout(predicate::str::contains("\"blocks\"").and(predicate::str::contains("\n")));
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("\"blocks\"").and(predicate::str::contains("\n")));
 }
 
 #[test]
 fn validate_json_ok() {
     let fixture = std::path::Path::new("../proofdown_parser/tests/fixtures/minimal.pml");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
-    cmd.arg("validate").arg(fixture).arg("--json").arg("--pretty");
-    cmd.assert().success().stdout(predicate::str::contains("\"ok\": true"));
+    cmd.arg("validate")
+        .arg(fixture)
+        .arg("--json")
+        .arg("--pretty");
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("\"ok\": true"));
 }
 
 #[test]
 fn validate_limits_depth_enforced() {
     // Build a document with depth 6 (nested grids)
     let mut s = String::new();
-    for _ in 0..6 { s.push_str("<grid cols=1>"); }
-    for _ in 0..6 { s.push_str("</grid>"); }
+    for _ in 0..6 {
+        s.push_str("<grid cols=1>");
+    }
+    for _ in 0..6 {
+        s.push_str("</grid>");
+    }
 
     let mut tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), s).expect("write");
 
     let mut cmd = Command::cargo_bin("pml").expect("bin");
-    cmd.arg("validate")
-        .arg(tmp.path())
-        .arg("--limits.depth=5");
+    cmd.arg("validate").arg(tmp.path()).arg("--limits.depth=5");
     // Expect non-zero exit because validator will enforce lower limit than default
-    cmd.assert().failure().stderr(predicate::str::contains("Validation error"));
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains("Validation error"));
 }
 
 #[test]
@@ -120,5 +153,8 @@ fn parse_limits_input_size_enforced() {
         .arg(tmp.path())
         .arg("--json")
         .arg("--limits.input-size=16");
-    cmd.assert().failure().stderr(predicate::str::contains("LimitExceeded").or(predicate::str::contains("input exceeds max size")));
+    cmd.assert().failure().stderr(
+        predicate::str::contains("LimitExceeded")
+            .or(predicate::str::contains("input exceeds max size")),
+    );
 }

@@ -29,7 +29,11 @@ impl ValidateError {
 
 impl Default for Limits {
     fn default() -> Self {
-        Self { max_depth: 16, max_nodes: 50_000, max_input_bytes: 1 << 20 }
+        Self {
+            max_depth: 16,
+            max_nodes: 50_000,
+            max_input_bytes: 1 << 20,
+        }
     }
 }
 
@@ -51,20 +55,35 @@ pub enum ValidateError {
     MissingAttribute { name: String, key: String },
 
     #[error("attribute type error: {name}.{key} expected {expected}")]
-    AttrType { name: String, key: String, expected: &'static str },
+    AttrType {
+        name: String,
+        key: String,
+        expected: &'static str,
+    },
 
     #[error("attribute out of bounds: {name}.{key}={value} not in {range}")]
-    AttrBound { name: String, key: String, value: String, range: &'static str },
+    AttrBound {
+        name: String,
+        key: String,
+        value: String,
+        range: &'static str,
+    },
 }
 
 pub fn validate(doc: &Document, limits: Option<&Limits>) -> Result<(), ValidateError> {
     let limits = limits.copied().unwrap_or_default();
     let (depth, nodes) = analyze(doc);
     if depth > limits.max_depth {
-        return Err(ValidateError::DepthExceeded { depth, max_depth: limits.max_depth });
+        return Err(ValidateError::DepthExceeded {
+            depth,
+            max_depth: limits.max_depth,
+        });
     }
     if nodes > limits.max_nodes {
-        return Err(ValidateError::NodeLimit { nodes, max_nodes: limits.max_nodes });
+        return Err(ValidateError::NodeLimit {
+            nodes,
+            max_nodes: limits.max_nodes,
+        });
     }
     // Whitelist & attribute schema checks
     for b in &doc.blocks {
@@ -98,7 +117,9 @@ fn validate_block(b: &Block) -> Result<(), ValidateError> {
     match b {
         Block::Component(c) => {
             validate_component(c)?;
-            for ch in &c.children { validate_block(ch)?; }
+            for ch in &c.children {
+                validate_block(ch)?;
+            }
         }
         _ => {}
     }
@@ -112,84 +133,143 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
         "grid" => {
             // attrs: cols=1..6 (required), gap=0..64 (optional)
             let mut seen = std::collections::HashSet::new();
-            for a in &c.attrs { seen.insert(a.key.as_str()); }
+            for a in &c.attrs {
+                seen.insert(a.key.as_str());
+            }
             if !seen.contains("cols") {
-                return Err(ValidateError::MissingAttribute { name: c.name.clone(), key: "cols".into() });
+                return Err(ValidateError::MissingAttribute {
+                    name: c.name.clone(),
+                    key: "cols".into(),
+                });
             }
             let cols = parse_int_attr(c, "cols")?;
             if cols < 1 || cols > 6 {
-                return Err(ValidateError::AttrBound { name: c.name.clone(), key: "cols".into(), value: cols.to_string(), range: "1..=6" });
+                return Err(ValidateError::AttrBound {
+                    name: c.name.clone(),
+                    key: "cols".into(),
+                    value: cols.to_string(),
+                    range: "1..=6",
+                });
             }
             if seen.contains("gap") {
                 let gap = parse_int_attr(c, "gap")?;
-                if gap < 0 || gap > 64 { return Err(ValidateError::AttrBound { name: c.name.clone(), key: "gap".into(), value: gap.to_string(), range: "0..=64" }); }
+                if gap < 0 || gap > 64 {
+                    return Err(ValidateError::AttrBound {
+                        name: c.name.clone(),
+                        key: "gap".into(),
+                        value: gap.to_string(),
+                        range: "0..=64",
+                    });
+                }
             }
             // unknown attributes
             for a in &c.attrs {
                 if a.key != "cols" && a.key != "gap" {
-                    return Err(ValidateError::UnknownAttribute { name: c.name.clone(), key: a.key.clone() });
+                    return Err(ValidateError::UnknownAttribute {
+                        name: c.name.clone(),
+                        key: a.key.clone(),
+                    });
                 }
             }
         }
         "section" => {
             require_attr_present(c, "title")?;
-            forbid_unknown(c, &["title"]) ?;
+            forbid_unknown(c, &["title"])?;
         }
         "card" => {
             require_attr_present(c, "title")?;
-            forbid_unknown(c, &["title"]) ?;
+            forbid_unknown(c, &["title"])?;
         }
 
         // Artifacts (require id)
-        "artifact.summary" | "artifact.table" | "artifact.markdown" | "artifact.link" | "artifact.json" | "artifact.image" | "artifact.text" => {
+        "artifact.summary" | "artifact.table" | "artifact.markdown" | "artifact.link"
+        | "artifact.json" | "artifact.image" | "artifact.text" => {
             require_attr_present(c, "id")?;
             match name {
                 "artifact.json" => {
                     // optional: collapsed=true|false, depth=0..8
-                    if has_attr(c, "collapsed") { parse_bool_attr(c, "collapsed")?; }
+                    if has_attr(c, "collapsed") {
+                        parse_bool_attr(c, "collapsed")?;
+                    }
                     if has_attr(c, "depth") {
-                        let d = parse_int_attr(c, "depth")?; if d < 0 || d > 8 { return Err(ValidateError::AttrBound { name: c.name.clone(), key: "depth".into(), value: d.to_string(), range: "0..=8" }); }
+                        let d = parse_int_attr(c, "depth")?;
+                        if d < 0 || d > 8 {
+                            return Err(ValidateError::AttrBound {
+                                name: c.name.clone(),
+                                key: "depth".into(),
+                                value: d.to_string(),
+                                range: "0..=8",
+                            });
+                        }
                     }
                     // v2: optional json_pointer (RFC 6901)
                     if has_attr(c, "json_pointer") {
                         let p = get_attr(c, "json_pointer");
                         if !is_valid_json_pointer(p) {
-                            return Err(ValidateError::AttrType { name: c.name.clone(), key: "json_pointer".into(), expected: "RFC 6901 JSON Pointer (e.g., /a/b)" });
+                            return Err(ValidateError::AttrType {
+                                name: c.name.clone(),
+                                key: "json_pointer".into(),
+                                expected: "RFC 6901 JSON Pointer (e.g., /a/b)",
+                            });
                         }
                     }
-                    forbid_unknown(c, &["id", "collapsed", "depth", "json_pointer"]) ?;
+                    forbid_unknown(c, &["id", "collapsed", "depth", "json_pointer"])?;
                 }
                 "artifact.image" => {
                     require_attr_present(c, "alt")?;
-                    if has_attr(c, "max_height") { let mh = parse_int_attr(c, "max_height")?; if mh < 128 || mh > 2048 { return Err(ValidateError::AttrBound { name: c.name.clone(), key: "max_height".into(), value: mh.to_string(), range: "128..=2048" }); } }
+                    if has_attr(c, "max_height") {
+                        let mh = parse_int_attr(c, "max_height")?;
+                        if mh < 128 || mh > 2048 {
+                            return Err(ValidateError::AttrBound {
+                                name: c.name.clone(),
+                                key: "max_height".into(),
+                                value: mh.to_string(),
+                                range: "128..=2048",
+                            });
+                        }
+                    }
                     // v2: optional caption
-                    forbid_unknown(c, & ["id", "alt", "max_height", "caption"]) ?;
+                    forbid_unknown(c, &["id", "alt", "max_height", "caption"])?;
                 }
                 "artifact.table" => {
                     // v2: optional caption, columns (keys or RFC 6901 pointers), kind (schema hint)
                     if has_attr(c, "columns") {
                         let cols = get_attr(c, "columns");
                         if !are_valid_columns(cols) {
-                            return Err(ValidateError::AttrType { name: c.name.clone(), key: "columns".into(), expected: "comma-separated keys or RFC 6901 JSON Pointers" });
+                            return Err(ValidateError::AttrType {
+                                name: c.name.clone(),
+                                key: "columns".into(),
+                                expected: "comma-separated keys or RFC 6901 JSON Pointers",
+                            });
                         }
                     }
-                    forbid_unknown(c, & ["id", "caption", "columns", "kind"]) ?;
+                    forbid_unknown(c, &["id", "caption", "columns", "kind"])?;
                 }
                 "artifact.text" => {
                     // v2: text viewer with max_lines 1..500 and optional caption
                     if has_attr(c, "max_lines") {
-                        let ml = parse_int_attr(c, "max_lines")?; if ml < 1 || ml > 500 { return Err(ValidateError::AttrBound { name: c.name.clone(), key: "max_lines".into(), value: ml.to_string(), range: "1..=500" }); }
+                        let ml = parse_int_attr(c, "max_lines")?;
+                        if ml < 1 || ml > 500 {
+                            return Err(ValidateError::AttrBound {
+                                name: c.name.clone(),
+                                key: "max_lines".into(),
+                                value: ml.to_string(),
+                                range: "1..=500",
+                            });
+                        }
                     }
-                    forbid_unknown(c, & ["id", "max_lines", "caption"]) ?;
+                    forbid_unknown(c, &["id", "max_lines", "caption"])?;
                 }
                 "artifact.link" => {
-                    if has_attr(c, "download") { parse_bool_attr(c, "download")?; }
+                    if has_attr(c, "download") {
+                        parse_bool_attr(c, "download")?;
+                    }
                     if has_attr(c, "title") { /* any string */ }
                     // allow caption later if needed; keep minimal for now
-                    forbid_unknown(c, &["id", "download", "title"]) ?;
+                    forbid_unknown(c, &["id", "download", "title"])?;
                 }
                 _ => {
-                    forbid_unknown(c, &["id"]) ?;
+                    forbid_unknown(c, &["id"])?;
                 }
             }
         }
@@ -198,7 +278,11 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
         "repo.code" | "repo.link" | "repo.tree" | "repo.diff" | "repo.symbol" => {
             // accept known names; unknown attrs left for future
         }
-        _ => return Err(ValidateError::UnknownComponent { name: c.name.clone() }),
+        _ => {
+            return Err(ValidateError::UnknownComponent {
+                name: c.name.clone(),
+            })
+        }
     }
     Ok(())
 }
@@ -208,18 +292,30 @@ fn has_attr(c: &proofdown_ast::Component, key: &str) -> bool {
 }
 
 fn get_attr<'a>(c: &'a proofdown_ast::Component, key: &str) -> &'a str {
-    c.attrs.iter().find(|a| a.key == key).map(|a| a.value.as_str()).unwrap()
+    c.attrs
+        .iter()
+        .find(|a| a.key == key)
+        .map(|a| a.value.as_str())
+        .unwrap()
 }
 
 fn require_attr_present(c: &proofdown_ast::Component, key: &str) -> Result<(), ValidateError> {
-    if !has_attr(c, key) { return Err(ValidateError::MissingAttribute { name: c.name.clone(), key: key.into() }); }
+    if !has_attr(c, key) {
+        return Err(ValidateError::MissingAttribute {
+            name: c.name.clone(),
+            key: key.into(),
+        });
+    }
     Ok(())
 }
 
 fn forbid_unknown(c: &proofdown_ast::Component, allowed: &[&str]) -> Result<(), ValidateError> {
     for a in &c.attrs {
         if !allowed.iter().any(|k| k == &a.key) {
-            return Err(ValidateError::UnknownAttribute { name: c.name.clone(), key: a.key.clone() });
+            return Err(ValidateError::UnknownAttribute {
+                name: c.name.clone(),
+                key: a.key.clone(),
+            });
         }
     }
     Ok(())
@@ -227,7 +323,11 @@ fn forbid_unknown(c: &proofdown_ast::Component, allowed: &[&str]) -> Result<(), 
 
 fn parse_int_attr(c: &proofdown_ast::Component, key: &str) -> Result<i64, ValidateError> {
     let v = c.attrs.iter().find(|a| a.key == key).unwrap();
-    v.value.parse::<i64>().map_err(|_| ValidateError::AttrType { name: c.name.clone(), key: key.into(), expected: "integer" })
+    v.value.parse::<i64>().map_err(|_| ValidateError::AttrType {
+        name: c.name.clone(),
+        key: key.into(),
+        expected: "integer",
+    })
 }
 
 fn parse_bool_attr(c: &proofdown_ast::Component, key: &str) -> Result<bool, ValidateError> {
@@ -235,24 +335,37 @@ fn parse_bool_attr(c: &proofdown_ast::Component, key: &str) -> Result<bool, Vali
     match v.value.as_str() {
         "true" => Ok(true),
         "false" => Ok(false),
-        _ => Err(ValidateError::AttrType { name: c.name.clone(), key: key.into(), expected: "boolean true|false" }),
+        _ => Err(ValidateError::AttrType {
+            name: c.name.clone(),
+            key: key.into(),
+            expected: "boolean true|false",
+        }),
     }
 }
 
 // RFC 6901 minimal syntax check: must start with '/', tokens may contain '~0' or '~1' escapes only
 fn is_valid_json_pointer(s: &str) -> bool {
-    if s.is_empty() { return false; }
-    if !s.starts_with('/') { return false; }
+    if s.is_empty() {
+        return false;
+    }
+    if !s.starts_with('/') {
+        return false;
+    }
     // Validate escape sequences
     let bytes = s.as_bytes();
     let mut i = 1; // skip leading '/'
     while i < bytes.len() {
         let b = bytes[i];
         if b == b'~' {
-            if i + 1 >= bytes.len() { return false; }
+            if i + 1 >= bytes.len() {
+                return false;
+            }
             let b2 = bytes[i + 1];
-            if b2 != b'0' && b2 != b'1' { return false; }
-            i += 2; continue;
+            if b2 != b'0' && b2 != b'1' {
+                return false;
+            }
+            i += 2;
+            continue;
         }
         i += 1;
     }
@@ -260,17 +373,26 @@ fn is_valid_json_pointer(s: &str) -> bool {
 }
 
 fn is_simple_key(tok: &str) -> bool {
-    !tok.is_empty() && tok.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_' || ch == '-' || ch == '.')
+    !tok.is_empty()
+        && tok
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || ch == '_' || ch == '-' || ch == '.')
 }
 
 fn are_valid_columns(s: &str) -> bool {
     for tok in s.split(',') {
         let t = tok.trim();
-        if t.is_empty() { return false; }
+        if t.is_empty() {
+            return false;
+        }
         if t.starts_with('/') {
-            if !is_valid_json_pointer(t) { return false; }
+            if !is_valid_json_pointer(t) {
+                return false;
+            }
         } else {
-            if !is_simple_key(t) { return false; }
+            if !is_simple_key(t) {
+                return false;
+            }
         }
     }
     true
