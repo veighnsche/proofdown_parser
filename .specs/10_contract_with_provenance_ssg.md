@@ -47,7 +47,7 @@ pub struct Document { pub blocks: Vec<Block> }
 #[serde(tag = "type")]
 pub enum Block {
     Heading { level: u8, text: String },
-    Paragraph(String),
+    Paragraph { text: String },
     Component(Component),
 }
 
@@ -62,8 +62,9 @@ pub struct Component {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Attr { pub key: String, pub value: String }
 
-// Parse Proofdown (UTF-8, \n newlines). Deterministic & pure (no I/O, no randomness).
-pub fn parse(input: &str) -> Result<Document>;
+// Parse Proofdown (UTF-8). Deterministic & pure (no I/O, no randomness).
+// Callers SHOULD normalize newlines, but the parser treats CRLF/CR as \n consistently.
+pub fn parse(input: &str) -> Result<Document, ParseError>;
 
 // Convenience helper (stable): returns first matching attribute value if present.
 pub fn find_attr<'a>(attrs: &'a [Attr], key: &str) -> Option<&'a str>;

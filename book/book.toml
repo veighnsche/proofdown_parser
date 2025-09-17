@@ -1,0 +1,12 @@
+[book]
+author = "Proofdown Authors"
+language = "en"
+multilingual = false
+src = "src"
+title = "The Proofdown Language"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+copy-fonts = true
+site-url = "/proofdown/"

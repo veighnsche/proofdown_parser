@@ -1,12 +1,12 @@
 use std::{env, fs};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use proofdown_parser::{parse, parse_with_limits, ParserLimits};
 use proofdown_validate::{validate, Limits};
 use serde_json::json;
 
 fn usage() -> &'static str {
-    "Usage:\n  pml [--help|-h] [--version|-V]\n  pml parse <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n  pml validate <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n"
+    "Usage:\n  pml [--help|-h] [--version|-V]\n  pml parse <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n  pml validate <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n\nExit codes:\n  0 OK\n  1 Parse error\n  2 Validation error\n  3 IO/usage error\n"
 }
 
 fn main() -> Result<()> {
@@ -43,7 +43,22 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
     let lims = parse_limits_flags(&args);
-    let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
+    let input = match fs::read_to_string(&file) {
+        Ok(s) => s,
+        Err(e) => {
+            if json {
+                let payload = if pretty {
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}))?
+                } else {
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}).to_string()
+                };
+                eprintln!("{}", payload);
+            } else {
+                eprintln!("IO error reading {}: {}", file, e);
+            }
+            std::process::exit(3);
+        }
+    };
     match if lims.is_some() {
         let l = lims.unwrap();
         parse_with_limits(&input, l)
@@ -65,7 +80,11 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
         }
         Err(e) => {
             if json {
-                let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e}))? } else { json!({"ok": false, "err": e}).to_string() };
+                let payload = if pretty {
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}))?
+                } else {
+                    json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}).to_string()
+                };
                 eprintln!("{}", payload);
             } else {
                 eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
@@ -84,12 +103,31 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
     let lims = parse_limits_flags(&args);
-    let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
+    let input = match fs::read_to_string(&file) {
+        Ok(s) => s,
+        Err(e) => {
+            if json {
+                let payload = if pretty {
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}))?
+                } else {
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}).to_string()
+                };
+                eprintln!("{}", payload);
+            } else {
+                eprintln!("IO error reading {}: {}", file, e);
+            }
+            std::process::exit(3);
+        }
+    };
     let doc = match parse(&input) {
         Ok(d) => d,
         Err(e) => {
             if json {
-                let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e}))? } else { json!({"ok": false, "err": e}).to_string() };
+                let payload = if pretty {
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}))?
+                } else {
+                    json!({"ok": false, "err": {"code": match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, "msg": e.msg, "line": e.line, "col": e.col}}).to_string()
+                };
                 eprintln!("{}", payload);
             } else {
                 eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
@@ -101,7 +139,11 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
     if let Err(e) = validate(&doc, Some(&limits)) {
         if json {
             // map to a generic JSON error payload
-            let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e.to_string()}))? } else { json!({"ok": false, "err": e.to_string()}).to_string() };
+            let payload = if pretty {
+                serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": e.code(), "msg": e.to_string()}}))?
+            } else {
+                json!({"ok": false, "err": {"code": e.code(), "msg": e.to_string()}}).to_string()
+            };
             eprintln!("{}", payload);
         } else {
             eprintln!("Validation error: {}", e);
