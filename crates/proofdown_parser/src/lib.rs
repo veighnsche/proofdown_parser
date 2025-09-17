@@ -115,3 +115,7 @@ fn parse_attrs(mut src: &str) -> Result<Vec<Attr>> {
     }
     Ok(out)
 }
+
+pub fn find_attr<'a>(attrs: &'a [Attr], key: &str) -> Option<&'a str> {
+    attrs.iter().find(|a| a.key == key).map(|a| a.value.as_str())
+}
