@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Proofdown WASM Demo</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      textarea { width: 100%; height: 10rem; font-family: monospace; }
+      pre { background: #f5f5f5; padding: 1rem; overflow: auto; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Proofdown WASM Demo</h1>
+    <p>Build the WASM with:<br>
+      <code>cargo build -p proofdown_wasm --no-default-features --features wasm --target wasm32-unknown-unknown</code>
+    </p>
+    <div class="row">
+      <div>
+        <h3>Input</h3>
+        <textarea id="input"># Title\n\n<card title="T" /></textarea>
+        <button id="parse">Parse</button>
+      </div>
+      <div>
+        <h3>Output</h3>
+        <pre id="out">(result)</pre>
+      </div>
+    </div>
+
+    <script type="module">
+      async function loadWasm() {
+        const wasmUrl = '/target/wasm32-unknown-unknown/debug/proofdown_wasm.wasm';
+        const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmUrl), {});
+        // wasm_bindgen glue not generated in this minimal example; instead, call exported function index 0.
+        // This is only a placeholder; for a working demo, use wasm-bindgen or wasm-pack.
+        return null;
+      }
+
+      document.getElementById('parse').addEventListener('click', async () => {
+        // Placeholder: in a full demo, call wasm_parse via wasm-bindgen and display JSON
+        const text = document.getElementById('input').value;
+        const out = { ok: true, note: 'This is a placeholder. Use wasm-pack to call wasm_parse.' };
+        document.getElementById('out').textContent = JSON.stringify(out, null, 2);
+      });
+
+      loadWasm().catch(err => console.error(err));
+    </script>
+  </body>
+</html>

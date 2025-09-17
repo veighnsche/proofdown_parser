@@ -1,3 +1,17 @@
+//! Proofdown parser — minimal, deterministic grammar to a typed AST.
+//!
+//! Scope (v1):
+//! - Headings `#..####` with one space after the marker; empty titles become paragraphs.
+//! - Paragraphs: consecutive non-empty lines until a blank or a component/heading start.
+//! - Components: HTML-like `<name key="value" ...>` with optional children until `</name>`; self-closing `<name ... />` supported.
+//! - Attributes: quoted or bare values preserved exactly; parsed as strings here, typed later by validators.
+//! - Limits: depth ≤ 16, nodes ≤ 50k, input bytes ≤ 1 MiB (configurable via `ParserLimits`).
+//!
+//! Non-goals:
+//! - No IO; no semantic validation — that is handled by `proofdown_validate`/SSG.
+//! - No HTML passthrough. Rendering is separate and deterministic.
+//!
+//! See also: `.specs/00_proofdown_parser.md`, v2 additive notes, and `.docs/proofdown-authoring-guide.md`.
 use proofdown_ast::{Attr, Block, Component, Document, ErrorKind, ParseError};
 
 type PResult<T> = std::result::Result<T, ParseError>;
@@ -25,6 +39,13 @@ pub fn parse(input: &str) -> PResult<Document> {
 pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document> {
     // MVP: parse only headings (#..####), minimal components <grid>, <card>, and artifact.*
     // Anything else becomes a paragraph.
+    // Normalize newlines to \n for consistent scanning across platforms
+    let normalized: std::borrow::Cow<'_, str> = if input.contains('\r') {
+        std::borrow::Cow::Owned(input.replace("\r\n", "\n").replace('\r', "\n"))
+    } else {
+        std::borrow::Cow::Borrowed(input)
+    };
+    let input = &*normalized;
     if input.as_bytes().len() > limits.max_input_bytes {
         return Err(mk_err(input, 0, ErrorKind::LimitExceeded, format!(
             "input exceeds max size ({} bytes)", limits.max_input_bytes

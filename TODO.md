@@ -46,7 +46,7 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 
 - [x] M5: WASM bindings scaffold (`proofdown_wasm`)
   - [x] `wasm_parse(input: &str) -> String` returns `{ ok, doc|err }` JSON
-  - [ ] Example page and CI build job
+  - [x] Example page and CI build job
 
 - [ ] M6: Structured error model (contract §5)
   - [ ] `ParseError` + `ErrorKind` defined and used in parser
@@ -58,7 +58,7 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 
 ## Parser Work (crates/proofdown_parser)
 
-- [ ] Normalize newlines to `\n` (input is UTF-8; treat `\r\n` as `\n` consistently)
+- [x] Normalize newlines to `\n` (input is UTF-8; treat `\r\n` as `\n` consistently)
 - [x] Headings:
   - [x] Require a single space after `#..####` per grammar; otherwise treat as paragraph
   - [x] Trim trailing spaces; disallow empty titles
@@ -78,7 +78,7 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 
 - [ ] Encode component registry and attribute schemas:
   - Structural: `grid(cols=1..6, gap=0..64)`, `section(title)`, `card(title)`
-  - Artifacts: `artifact.summary(id)`, `artifact.table(id)`, `artifact.json(id, collapsed, depth=0..8)`, `artifact.markdown(id)`, `artifact.image(id, alt, max_height=128..2048)`, `artifact.link(id, download, title)`
+  - Artifacts: `artifact.summary(id)`, `artifact.table(id, caption?, columns?, kind?)`, `artifact.json(id, collapsed?, depth=0..8, json_pointer?)`, `artifact.markdown(id)`, `artifact.image(id, alt, max_height=128..2048, caption?)`, `artifact.link(id, download, title)`, `artifact.text(id, max_lines=1..500, caption?)`
   - Optional repo viewers (if artifacts resolvers exist): `repo.code`, `repo.link`, `repo.tree`, `repo.diff`, `repo.symbol`
 - [ ] Attribute types and bounds:
   - Integers: decimal with inclusive ranges
@@ -122,39 +122,39 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 - [x] Map `ParseError` to a JS object `{ line, col, kind, msg }`
 - [x] Optimize build size (feature gates, `wasm-opt` in CI)
 - [x] Provide a small example in `examples/wasm` with bundler config
-- [ ] Optimize build size (feature gates, `wasm-opt` in CI)
-- [ ] Provide a small example in `examples/wasm` with bundler config
+- [x] Optimize build size (feature gates, `wasm-opt` in CI)
+- [x] Provide a small example in `examples/wasm` with bundler config
 
 ## CLI (`proofdown_cli`)
 
 - [x] Command: `pml parse <file>` → print AST JSON; exit non-zero on error
 - [x] Command: `pml validate <file>` → perform whitelist and limits checks
-- [ ] Flags: `--json`, `--pretty`, `--limits.depth`, `--limits.nodes`, `--limits.input-size`
-- [ ] Snapshot tests for CLI output
+- [x] Flags: `--json`, `--pretty`, `--limits.depth`, `--limits.nodes`, `--limits.input-size`
+- [x] Snapshot tests for CLI output
 
 ## Testing & Quality
 
 - [x] Golden tests from `.specs/00_proofdown_parser.md` examples
 - [x] Determinism tests: parse → serialize JSON → compare
 - [x] Error-path tests: unknown component, bad nesting, bad attributes, depth exceeded
-- [ ] Fuzzing (later): feed random inputs; assert no panics and reasonable error coverage
-- [ ] Benchmarks: large documents; ensure linear or near-linear time behavior
+- [x] Fuzzing (later): feed random inputs; assert no panics and reasonable error coverage
+- [x] Benchmarks: large documents; ensure linear or near-linear time behavior
 
 ## CI & Quality Gates
 
-- [ ] Add CI workflow: build, test, clippy, fmt check, wasm build (feature)
+- [x] Add CI workflow: build, test, clippy, fmt check, wasm build (feature)
 - [ ] Add `cargo fmt` and `cargo clippy` to Developer Guide
 - [ ] Optional: cache cargo and wasm toolchains for faster CI
 
 ## Release & Versioning (contract §7)
 
-- [ ] Add CHANGELOG.md with rules: patch/minor/major per contract
+- [x] Add CHANGELOG.md with rules: patch/minor/major per contract
 - [ ] Tag releases and publish crates (internal or crates.io as applicable)
 - [ ] Document the `contract-change` label and PR process
 
 ## Integration with `provenance_ssg`
 
-- [ ] Provide an integration example crate or doc snippet using `external_pml` feature
+- [x] Provide an integration example crate or doc snippet using `external_pml` feature
 - [ ] Add an integration test (optional) gated by a workspace feature that compiles a minimal SSG consumer
 
 ## Ownership & Contacts
@@ -199,9 +199,9 @@ This document tracks implementation tasks, milestones, and decisions for the Pro
 ## Documentation
 
 - [x] Keep `README.md` aligned with spec and current API surface
-- [ ] Add module-level rustdoc with grammar highlights and examples
+- [x] Add module-level rustdoc with grammar highlights and examples
 - [ ] Add `docs/` pages if needed for integration notes (parent workspace guidance)
-- [ ] Add CONTRIBUTING.md and Developer Guide (build, test, run CLI/WASM)
+- [x] Add CONTRIBUTING.md and Developer Guide (build, test, run CLI/WASM)
 
 ## Workspace & Packaging
 

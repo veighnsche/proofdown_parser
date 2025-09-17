@@ -1,22 +1,12 @@
 [package]
-name = "proofdown_cli"
+name = "proofdown_integration_example"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
 anyhow = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-proofdown_ast = { path = "../proofdown_ast" }
 proofdown_parser = { path = "../proofdown_parser" }
 proofdown_validate = { path = "../proofdown_validate" }
-
-[dev-dependencies]
-assert_cmd = "2"
-predicates = "3"
-tempfile = "3"
-
-[[bin]]
-name = "pml"
-path = "src/main.rs"
+proofdown_ast = { path = "../proofdown_ast" }

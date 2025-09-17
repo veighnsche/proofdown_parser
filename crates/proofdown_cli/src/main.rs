@@ -1,12 +1,12 @@
 use std::{env, fs};
 
 use anyhow::{bail, Context, Result};
-use proofdown_parser::parse;
+use proofdown_parser::{parse, parse_with_limits, ParserLimits};
 use proofdown_validate::{validate, Limits};
 use serde_json::json;
 
 fn usage() -> &'static str {
-    "Usage:\n  pml parse <file> [--json] [--pretty]\n  pml validate <file>\n"
+    "Usage:\n  pml [--help|-h] [--version|-V]\n  pml parse <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n  pml validate <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]\n"
 }
 
 fn main() -> Result<()> {
@@ -14,6 +14,14 @@ fn main() -> Result<()> {
     if args.is_empty() {
         eprintln!("{}", usage());
         bail!("no command provided");
+    }
+    // Top-level flags
+    if args.len() == 1 {
+        match args[0].as_str() {
+            "--help" | "-h" => { println!("{}", usage()); return Ok(()); }
+            "--version" | "-V" => { println!("{}", env!("CARGO_PKG_VERSION")); return Ok(()); }
+            _ => {}
+        }
     }
     let cmd = args.remove(0);
     match cmd.as_str() {
@@ -34,8 +42,14 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
     let file = args.remove(0);
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
+    let lims = parse_limits_flags(&args);
     let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
-    match parse(&input) {
+    match if lims.is_some() {
+        let l = lims.unwrap();
+        parse_with_limits(&input, l)
+    } else {
+        parse(&input)
+    } {
         Ok(doc) => {
             if json {
                 if pretty {
@@ -67,15 +81,54 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
         bail!("validate: missing <file>");
     }
     let file = args.remove(0);
+    let json = args.iter().any(|a| a == "--json");
+    let pretty = args.iter().any(|a| a == "--pretty");
+    let lims = parse_limits_flags(&args);
     let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
     let doc = match parse(&input) {
         Ok(d) => d,
         Err(e) => {
-            eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+            if json {
+                let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e}))? } else { json!({"ok": false, "err": e}).to_string() };
+                eprintln!("{}", payload);
+            } else {
+                eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+            }
             std::process::exit(1);
         }
     };
-    validate(&doc, Some(&Limits::default())).context("validation failed")?;
-    println!("OK");
+    let limits = lims.map(|l| Limits { max_depth: l.max_depth, max_nodes: l.max_nodes, max_input_bytes: l.max_input_bytes }).unwrap_or_default();
+    if let Err(e) = validate(&doc, Some(&limits)) {
+        if json {
+            // map to a generic JSON error payload
+            let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e.to_string()}))? } else { json!({"ok": false, "err": e.to_string()}).to_string() };
+            eprintln!("{}", payload);
+        } else {
+            eprintln!("Validation error: {}", e);
+        }
+        std::process::exit(2);
+    } else {
+        if json {
+            let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": true}))? } else { json!({"ok": true}).to_string() };
+            println!("{}", payload);
+        } else {
+            println!("OK");
+        }
+    }
     Ok(())
+}
+
+fn parse_limits_flags(args: &[String]) -> Option<ParserLimits> {
+    let mut out = ParserLimits::default();
+    let mut seen = false;
+    for a in args {
+        if let Some(v) = a.strip_prefix("--limits.depth=") {
+            if let Ok(n) = v.parse::<usize>() { out.max_depth = n; seen = true; }
+        } else if let Some(v) = a.strip_prefix("--limits.nodes=") {
+            if let Ok(n) = v.parse::<usize>() { out.max_nodes = n; seen = true; }
+        } else if let Some(v) = a.strip_prefix("--limits.input-size=") {
+            if let Ok(n) = v.parse::<usize>() { out.max_input_bytes = n; seen = true; }
+        }
+    }
+    if seen { Some(out) } else { None }
 }

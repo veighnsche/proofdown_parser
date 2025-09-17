@@ -5,6 +5,8 @@ members = [
   "crates/proofdown_validate",
   "crates/proofdown_cli",
   "crates/proofdown_wasm",
+  "crates/schema_check",
+  "crates/proofdown_integration_example",
 ]
 resolver = "2"
 

@@ -8,3 +8,6 @@ license = "MIT OR Apache-2.0"
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 proofdown_ast = { path = "../proofdown_ast" }
+
+[dev-dependencies]
+proofdown_parser = { path = "../proofdown_parser" }
