@@ -1,0 +1,65 @@
+{
+  "blocks": [
+    {
+      "type": "Heading",
+      "level": 1,
+      "text": "QA Evidence for {{ commit }}"
+    },
+    {
+      "type": "Component",
+      "name": "grid",
+      "attrs": [
+        { "key": "cols", "value": "3" },
+        { "key": "gap",  "value": "16" }
+      ],
+      "children": [
+        {
+          "type": "Component",
+          "name": "card",
+          "attrs": [ { "key": "title", "value": "Tests" } ],
+          "children": [
+            {
+              "type": "Component",
+              "name": "artifact.summary",
+              "attrs": [ { "key": "id", "value": "tests-summary" } ],
+              "children": [],
+              "self_closing": true
+            }
+          ],
+          "self_closing": false
+        },
+        {
+          "type": "Component",
+          "name": "card",
+          "attrs": [ { "key": "title", "value": "Coverage" } ],
+          "children": [
+            {
+              "type": "Component",
+              "name": "artifact.table",
+              "attrs": [ { "key": "id", "value": "coverage" } ],
+              "children": [],
+              "self_closing": true
+            }
+          ],
+          "self_closing": false
+        },
+        {
+          "type": "Component",
+          "name": "card",
+          "attrs": [ { "key": "title", "value": "Key Failures" } ],
+          "children": [
+            {
+              "type": "Component",
+              "name": "artifact.markdown",
+              "attrs": [ { "key": "id", "value": "failures" } ],
+              "children": [],
+              "self_closing": true
+            }
+          ],
+          "self_closing": false
+        }
+      ],
+      "self_closing": false
+    }
+  ]
+}

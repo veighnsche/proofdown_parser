@@ -11,6 +11,6 @@ pub fn wasm_parse(input: &str) -> String {
     // Return a JSON string: { ok: bool, doc?: Document, err?: string }
     match parse(input) {
         Ok(doc) => serde_json::json!({ "ok": true, "doc": doc }).to_string(),
-        Err(e) => serde_json::json!({ "ok": false, "err": e.to_string() }).to_string(),
+        Err(e) => serde_json::json!({ "ok": false, "err": e }).to_string(),
     }
 }

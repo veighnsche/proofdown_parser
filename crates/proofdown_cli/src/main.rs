@@ -3,6 +3,7 @@ use std::{env, fs};
 use anyhow::{bail, Context, Result};
 use proofdown_parser::parse;
 use proofdown_validate::{validate, Limits};
+use serde_json::json;
 
 fn usage() -> &'static str {
     "Usage:\n  pml parse <file> [--json] [--pretty]\n  pml validate <file>\n"
@@ -34,18 +35,30 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
     let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
-    let doc = parse(&input).with_context(|| format!("parsing {}", file))?;
-    if json {
-        if pretty {
-            println!("{}", serde_json::to_string_pretty(&doc)?);
-        } else {
-            println!("{}", serde_json::to_string(&doc)?);
+    match parse(&input) {
+        Ok(doc) => {
+            if json {
+                if pretty {
+                    println!("{}", serde_json::to_string_pretty(&doc)?);
+                } else {
+                    println!("{}", serde_json::to_string(&doc)?);
+                }
+            } else {
+                // Minimal human-readable dump
+                println!("Parsed Document: {} root blocks", doc.blocks.len());
+            }
+            Ok(())
         }
-    } else {
-        // Minimal human-readable dump
-        println!("Parsed Document: {} root blocks", doc.blocks.len());
+        Err(e) => {
+            if json {
+                let payload = if pretty { serde_json::to_string_pretty(&json!({"ok": false, "err": e}))? } else { json!({"ok": false, "err": e}).to_string() };
+                eprintln!("{}", payload);
+            } else {
+                eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+            }
+            std::process::exit(1);
+        }
     }
-    Ok(())
 }
 
 fn cmd_validate(mut args: Vec<String>) -> Result<()> {
@@ -55,7 +68,13 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
     }
     let file = args.remove(0);
     let input = fs::read_to_string(&file).with_context(|| format!("reading {}", file))?;
-    let doc = parse(&input).with_context(|| format!("parsing {}", file))?;
+    let doc = match parse(&input) {
+        Ok(d) => d,
+        Err(e) => {
+            eprintln!("Parse error at {}:{} [{}]: {}", e.line, e.col, match e.kind { proofdown_ast::ErrorKind::Syntax => "Syntax", proofdown_ast::ErrorKind::LimitExceeded => "LimitExceeded" }, e.msg);
+            std::process::exit(1);
+        }
+    };
     validate(&doc, Some(&Limits::default())).context("validation failed")?;
     println!("OK");
     Ok(())

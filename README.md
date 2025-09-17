@@ -128,10 +128,11 @@ Note: The `proofdown_ast` crate exists and hosts these types; it will also host 
 
 ## Public API
 
-Current API (MVP):
+Current API (typed):
 
 ```rust
-pub fn parse(input: &str) -> anyhow::Result<Document>
+pub fn parse(input: &str) -> Result<Document, ParseError>
+pub fn parse_with_limits(input: &str, limits: ParserLimits) -> Result<Document, ParseError>
 ```
 
 Helper:
@@ -235,25 +236,26 @@ Repository viewers (optional for v1 if artifacts exist to resolve):
 - `repo.diff(base_id, head_id, path, context=0..10)`
 - `repo.symbol(path, name)`
 
-Unknown components/attributes MUST error during the validation pass.
+Note: These are the component names used downstream by the SSG. The parser recognizes component syntax and records `Component { name, attrs, children, self_closing }` but does not enforce a whitelist. Unknown component names/attributes are not parse errors; they are validated by the SSG or the `proofdown_validate` crate.
 
 ## Determinism & Limits
 
 - Pure functions; no environment access.
 - Deterministic traversal order and attribute normalization.
-- Configurable limits with sensible defaults; all limit breaches produce structured errors.
+- Limits are a parser responsibility. Default limits (depth ≤ 16, nodes ≤ 50k, input ≤ 1 MiB). Breaches produce errors (structured error model planned).
 
 ## Security Model
 
-- Parser recognizes a fixed component whitelist.
+- Parser does not enforce a component whitelist. It recognizes component syntax only; whitelist/attribute validation happen downstream (SSG or validator crate).
 - No script execution or HTML emission; output is a structured AST only.
 - Text sanitization happens during render; this crate is purely structural.
 
 ## Testing Strategy
 
 - Golden fixtures derived from `.specs/00_proofdown_parser.md` examples.
-- Error cases: unknown component, bad nesting, bad attributes, depth exceeded.
-- Determinism: parse → serialize AST (stable JSON) → compare across runs.
+- Parser error cases: malformed tags, unterminated/mismatched components, malformed attributes, and limits exceeded.
+- Unknown components/attributes are not parse errors and are covered by downstream validation tests.
+- Determinism: parse → serialize AST (stable JSON) → byte-for-byte compare across runs.
 
 ## Roadmap
 
@@ -277,19 +279,52 @@ cargo build -p proofdown_parser
 cargo test  -p proofdown_parser
 ```
 
+## Error Model (contract §5)
+
+```rust
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ErrorKind { Syntax, LimitExceeded }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ParseError { pub line: usize, pub col: usize, pub kind: ErrorKind, pub msg: String }
+```
+
+Parser returns `ParseError` with best-effort line/col and kind on syntax and limit failures.
+
 ## CLI and WASM (scaffolded)
 
 - CLI (`proofdown_cli`):
   - `pml parse <file>` → exit non-zero on error; `--json` dumps AST JSON.
   - `pml validate <file>` → runs whitelist/limits validation.
 - WASM (`proofdown_wasm`):
-  - `wasm_parse(input: &str) -> String` returning a JSON string with shape `{ ok: boolean, doc?: Document, err?: string }` (via optional `wasm` feature and `wasm-bindgen`).
+  - `wasm_parse(input: &str) -> String` returning a JSON string with shape `{ ok: boolean, doc?: Document, err?: { line, col, kind, msg } }` (via optional `wasm` feature and `wasm-bindgen`).
 
 ## Integration with Parent Workspace
 
 - Do not include this nested workspace as a member of the parent.
 - Depend via `path` on inner crates from the parent.
 - Gate usage with features until crates stabilize.
+
+### Feature-gated integration example (in `provenance_ssg`)
+
+```toml
+# crates/provenance_ssg/Cargo.toml
+[dependencies]
+proofdown_parser = { path = "../proofdown_parser/crates/proofdown_parser", optional = true }
+
+[features]
+external_pml = ["proofdown_parser"]
+```
+
+In code, gate parser usage:
+
+```rust
+#[cfg(feature = "external_pml")]
+{
+    let doc = proofdown_parser::parse(pml_text)?;
+    // ... render ...
+}
+```
 
 ## License
 

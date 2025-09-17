@@ -76,8 +76,8 @@ dependencies = [
 name = "proofdown_parser"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "proofdown_ast",
+ "serde_json",
 ]
 
 [[package]]

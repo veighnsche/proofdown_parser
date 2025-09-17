@@ -23,3 +23,17 @@ pub struct Component {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Attr { pub key: String, pub value: String }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ErrorKind {
+    Syntax,
+    LimitExceeded,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ParseError {
+    pub line: usize, // 1-based
+    pub col: usize,  // 1-based, Unicode scalar values
+    pub kind: ErrorKind,
+    pub msg: String,
+}
