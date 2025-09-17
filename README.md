@@ -1,7 +1,5 @@
 # proofdown_parser
 
-Submodule placeholder for Proofdown parser.
-
 Proofdown Parser parses Proofdown (Component Markdown, CMD) into a deterministic, typed AST for rendering and fragment extraction within the Provenance system.
 
 This README summarizes the v1 parser scope, grammar, AST, API, limits, security model, component registry, and roadmap, drawing from `.specs/00_proofdown_parser.md`, `.plans/00_workspace_plan.md`, and the current crate implementation at `crates/proofdown_parser/src/lib.rs`.
@@ -19,7 +17,7 @@ Proofdown is a Markdown-like format with a small, HTML-like component system for
 - Markdown-style blocks: headings (`#`..`####`), paragraphs, lists, and code fences.
 - Minimal component tags for structured UI blocks, e.g. `<grid cols=3> ... </grid>`.
 - Optional interpolations of verified Index fields via `{{ field }}` (text-only, escaped at render time).
-- A link macro `[[...]]` for artifact- and repo-aware deep links (planned).
+- A link macro `[[...]]` for artifact- and repo-aware deep links.
 
 Files use UTF-8 with `\n` newlines and the `.pml` extension (Proof Markup Language).
 
@@ -31,12 +29,12 @@ This submodule hosts a nested Cargo workspace to allow independent iteration of 
 proofdown_parser/
 ├─ Cargo.toml                 # [workspace] root (nested under parent repo)
 ├─ crates/
-│  ├─ proofdown_ast/          # AST and error types, serde (planned)
+│  ├─ proofdown_ast/          # AST and error types, serde
 │  ├─ proofdown_lexer/        # optional tokenizer (planned)
 │  ├─ proofdown_parser/       # parser crate (this)
-│  ├─ proofdown_validate/     # whitelist + attribute/limits (planned)
-│  ├─ proofdown_wasm/         # wasm-bindgen bindings (planned)
-│  └─ proofdown_cli/          # small CLI for dev/testing (planned)
+│  ├─ proofdown_validate/     # whitelist + attribute/limits
+│  ├─ proofdown_wasm/         # wasm-bindgen bindings
+│  └─ proofdown_cli/          # small CLI for dev/testing
 └─ .specs/ and .plans/
 ```
 
@@ -45,7 +43,11 @@ Current workspace members (from root `Cargo.toml`):
 ```toml
 [workspace]
 members = [
+  "crates/proofdown_ast",
   "crates/proofdown_parser",
+  "crates/proofdown_validate",
+  "crates/proofdown_cli",
+  "crates/proofdown_wasm",
 ]
 resolver = "2"
 ```
@@ -94,9 +96,9 @@ proofdown_parser = { path = "crates/proofdown_parser/crates/proofdown_parser" }
 - Attributes: `key=value`, quoted with `"..."` or bare until whitespace/`>`.
 - Whitelist: `grid|section|card|artifact.(summary|table|json|markdown|image|link)`.
 
-## AST Types (current crate)
+## AST Types (proofdown_ast crate)
 
-The current parser defines the AST in `crates/proofdown_parser/src/lib.rs` and derives `serde` for stable JSON round-tripping:
+The AST types live in `crates/proofdown_ast/src/lib.rs` and derive `serde` for stable JSON round-tripping:
 
 ```rust
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -122,7 +124,7 @@ pub struct Component {
 pub struct Attr { pub key: String, pub value: String }
 ```
 
-Note: A separate `proofdown_ast` crate is planned to host these types and a typed error model shared across crates.
+Note: The `proofdown_ast` crate exists and hosts these types; it will also host a typed error model shared across crates.
 
 ## Public API
 
@@ -275,13 +277,13 @@ cargo build -p proofdown_parser
 cargo test  -p proofdown_parser
 ```
 
-## CLI and WASM (planned)
+## CLI and WASM (scaffolded)
 
 - CLI (`proofdown_cli`):
   - `pml parse <file>` → exit non-zero on error; `--json` dumps AST JSON.
   - `pml validate <file>` → runs whitelist/limits validation.
 - WASM (`proofdown_wasm`):
-  - `parse(input: &str) -> JsValue` returning stable JSON AST and structured errors.
+  - `wasm_parse(input: &str) -> String` returning a JSON string with shape `{ ok: boolean, doc?: Document, err?: string }` (via optional `wasm` feature and `wasm-bindgen`).
 
 ## Integration with Parent Workspace
 

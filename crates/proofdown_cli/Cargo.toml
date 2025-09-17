@@ -1,0 +1,17 @@
+[package]
+name = "proofdown_cli"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+proofdown_ast = { path = "../proofdown_ast" }
+proofdown_parser = { path = "../proofdown_parser" }
+proofdown_validate = { path = "../proofdown_validate" }
+
+[[bin]]
+name = "pml"
+path = "src/main.rs"

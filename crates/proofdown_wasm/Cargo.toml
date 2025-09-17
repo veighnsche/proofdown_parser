@@ -1,0 +1,19 @@
+[package]
+name = "proofdown_wasm"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Build with `--features wasm` for wasm32 target
+wasm = ["wasm-bindgen"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+proofdown_parser = { path = "../proofdown_parser" }
+proofdown_ast = { path = "../proofdown_ast" }
+wasm-bindgen = { version = "0.2", optional = true }

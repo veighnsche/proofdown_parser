@@ -1,9 +1,10 @@
 [package]
-name = "proofdown_parser"
+name = "proofdown_validate"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-anyhow = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 proofdown_ast = { path = "../proofdown_ast" }
