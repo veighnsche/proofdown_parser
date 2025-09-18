@@ -2,7 +2,6 @@ name: mdBook
 
 on:
   push:
-    branches: [ main, master ]
   pull_request:
   workflow_dispatch:
 
@@ -33,7 +32,9 @@ jobs:
           path: book/book
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: >-
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     needs: build
     runs-on: ubuntu-latest
     environment:
