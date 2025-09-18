@@ -17,8 +17,9 @@
           ],
           "children": [
             {
-              "text": "Hello",
-              "type": "Paragraph"
+              "info": "",
+              "text": "Hello\n",
+              "type": "CodeBlock"
             }
           ],
           "name": "card",
@@ -34,8 +35,9 @@
           ],
           "children": [
             {
-              "text": "# Heading inside",
-              "type": "Paragraph"
+              "info": "",
+              "text": "# Heading inside\n",
+              "type": "CodeBlock"
             }
           ],
           "name": "card",

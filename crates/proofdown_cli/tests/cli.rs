@@ -43,7 +43,7 @@ fn parse_non_utf8() {
 
 #[test]
 fn parse_json_error_payload_shape() {
-    let mut tmp = NamedTempFile::new().expect("tmp");
+    let tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), "<card title=\"unterminated>").expect("write");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("parse")
@@ -60,7 +60,7 @@ fn parse_json_error_payload_shape() {
 
 #[test]
 fn validate_json_error_payload_shape() {
-    let mut tmp = NamedTempFile::new().expect("tmp");
+    let tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), "<foo id=\"x\" />").expect("write");
     let mut cmd = Command::cargo_bin("pml").expect("bin");
     cmd.arg("validate")
@@ -131,7 +131,7 @@ fn validate_limits_depth_enforced() {
         s.push_str("</grid>");
     }
 
-    let mut tmp = NamedTempFile::new().expect("tmp");
+    let tmp = NamedTempFile::new().expect("tmp");
     fs::write(tmp.path(), s).expect("write");
 
     let mut cmd = Command::cargo_bin("pml").expect("bin");
@@ -144,7 +144,7 @@ fn validate_limits_depth_enforced() {
 
 #[test]
 fn parse_limits_input_size_enforced() {
-    let mut tmp = NamedTempFile::new().expect("tmp");
+    let tmp = NamedTempFile::new().expect("tmp");
     // 50 bytes input
     let s = "# T\n\n<card title=\"T\" />\n".repeat(2);
     fs::write(tmp.path(), s).expect("write");

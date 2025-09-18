@@ -1,11 +1,7 @@
-name: CI
+name: Legacy CI (disabled)
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-  schedule:
-    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -88,7 +84,7 @@ jobs:
           done
       - name: Validate minimal fixture (CLI JSON)
         run: |
-          cargo run -q -p proofdown_cli -- validate crates/proofdown_parser/tests/fixtures/minimal.pml --json | grep '"ok": true'
+          cargo run -q -p proofdown_cli -- validate crates/proofdown_parser/tests/fixtures/minimal.pml --json | grep -E '"ok":[[:space:]]*true'
 
   mdbook:
     runs-on: ubuntu-latest

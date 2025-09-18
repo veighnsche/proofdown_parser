@@ -1,0 +1,26 @@
+name: Schema Validation
+
+on:
+  push:
+    paths:
+      - '.specs/schemas/**'
+      - 'crates/schema_check/**'
+      - '.github/workflows/schema.yml'
+  pull_request:
+    paths:
+      - '.specs/schemas/**'
+      - 'crates/schema_check/**'
+      - '.github/workflows/schema.yml'
+
+concurrency:
+  group: Schema-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Validate JSON Schemas
+        run: cargo run -p schema_check -- .specs/schemas

@@ -1,11 +1,28 @@
 {
   "blocks": [
     {
-      "text": "Hello world",
+      "inlines": [
+        {
+          "text": "Hello",
+          "type": "Text"
+        },
+        {
+          "type": "SoftBreak"
+        },
+        {
+          "text": "world",
+          "type": "Text"
+        }
+      ],
       "type": "Paragraph"
     },
     {
-      "text": "Next",
+      "inlines": [
+        {
+          "text": "Next",
+          "type": "Text"
+        }
+      ],
       "type": "Paragraph"
     }
   ]

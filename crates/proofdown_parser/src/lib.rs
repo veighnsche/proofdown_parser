@@ -12,9 +12,11 @@
 //! - No HTML passthrough. Rendering is separate and deterministic.
 //!
 //! See also: `.specs/00_proofdown_parser.md`, v2 additive notes, and `.docs/proofdown-authoring-guide.md`.
-use proofdown_ast::{Attr, Block, Component, Document, ErrorKind, Inline, ListItem, ListKind, ParseError};
-use comrak::nodes::{AstNode, ListType, NodeValue};
+use comrak::nodes::{AstNode, ListType, NodeValue, TableAlignment};
 use comrak::{parse_document, Arena, ComrakOptions};
+use proofdown_ast::{
+    Attr, Block, Component, Document, ErrorKind, Inline, ListItem, ListKind, ParseError,
+};
 
 type PResult<T> = std::result::Result<T, ParseError>;
 
@@ -52,7 +54,7 @@ pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document>
         std::borrow::Cow::Borrowed(input)
     };
     let input = &*normalized;
-    if input.as_bytes().len() > limits.max_input_bytes {
+    if input.len() > limits.max_input_bytes {
         return Err(mk_err(
             input,
             0,
@@ -77,7 +79,9 @@ pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document>
             i = next_lt;
         }
         // skip any trailing newlines
-        while i < bytes.len() && (bytes[i] == b'\n' || bytes[i] == b'\r') { i += 1; }
+        while i < bytes.len() && (bytes[i] == b'\n' || bytes[i] == b'\r') {
+            i += 1;
+        }
     }
     let doc = Document { blocks };
     // Enforce depth and node limits post-parse (defaults for now; configurable in follow-up API)
@@ -136,15 +140,27 @@ fn parse_component(full: &str, base: usize) -> PResult<(Component, usize)> {
         let close_tag = format!("</{}>", name);
         loop {
             let remain = &full[base + used..];
-            if remain.starts_with(&close_tag) { break; }
-            if remain.is_empty() {
-                return Err(mk_err(full, base + used, ErrorKind::Syntax, format!("unterminated component <{}>", name)));
+            if remain.starts_with(&close_tag) {
+                break;
             }
-            if remain.starts_with("</") {
+            if remain.is_empty() {
+                return Err(mk_err(
+                    full,
+                    base + used,
+                    ErrorKind::Syntax,
+                    format!("unterminated component <{}>", name),
+                ));
+            }
+            if let Some(stripped) = remain.strip_prefix("</") {
                 // mismatched close
-                let name_end = remain[2..].find('>').unwrap_or(remain.len() - 2);
-                let close_name = &remain[2..2 + name_end].trim();
-                return Err(mk_err(full, base + used, ErrorKind::Syntax, format!("unexpected close </{}>", close_name)));
+                let name_end = stripped.find('>').unwrap_or(stripped.len());
+                let close_name = stripped[..name_end].trim();
+                return Err(mk_err(
+                    full,
+                    base + used,
+                    ErrorKind::Syntax,
+                    format!("unexpected close </{}>", close_name),
+                ));
             }
             if remain.starts_with('<') {
                 let (child, cused) = parse_component(full, base + used)?;
@@ -218,7 +234,7 @@ fn parse_attrs(mut src: &str) -> PResult<Vec<Attr>> {
                 key,
                 value: src[..end].to_string(),
             });
-            src = &src[end + 1..].trim_start();
+            src = src[end + 1..].trim_start();
         } else {
             let mut end = src.find(' ').unwrap_or(src.len());
             if let Some(gt) = src.find('>') {
@@ -229,7 +245,7 @@ fn parse_attrs(mut src: &str) -> PResult<Vec<Attr>> {
                 key,
                 value: src[..end].to_string(),
             });
-            src = &src[end..].trim_start();
+            src = src[end..].trim_start();
         }
     }
     Ok(out)
@@ -296,4 +312,213 @@ fn pos_to_line_col(s: &str, index: usize) -> (usize, usize) {
         }
     }
     (line, col)
+}
+
+fn parse_markdown_blocks(src: &str) -> Vec<Block> {
+    let arena = Arena::new();
+    let mut opts = ComrakOptions::default();
+    // Deterministic subset: disable smart punctuation, disallow raw HTML
+    opts.parse.smart = false;
+    opts.render.unsafe_ = false;
+    // Enable selected GFM extensions
+    opts.extension.table = true;
+    opts.extension.strikethrough = true;
+    opts.extension.autolink = true;
+    opts.extension.tasklist = true;
+    let root = parse_document(&arena, src, &opts);
+    let mut blocks = Vec::new();
+    for node in root.children() {
+        if let Some(b) = map_block(node) {
+            blocks.push(b);
+        }
+    }
+    blocks
+}
+
+fn map_block<'a>(node: &'a AstNode<'a>) -> Option<Block> {
+    match &node.data.borrow().value {
+        NodeValue::Paragraph => Some(Block::Paragraph {
+            inlines: collect_inlines(node),
+        }),
+        NodeValue::Heading(h) => Some(Block::Heading {
+            level: h.level,
+            inlines: collect_inlines(node),
+        }),
+        NodeValue::ThematicBreak => Some(Block::ThematicBreak),
+        NodeValue::BlockQuote => Some(Block::BlockQuote {
+            children: collect_blocks(node),
+        }),
+        NodeValue::CodeBlock(cb) => {
+            let info = cb.info.clone();
+            let text = cb.literal.clone();
+            Some(Block::CodeBlock { info, text })
+        }
+        NodeValue::List(l) => {
+            let kind = match l.list_type {
+                ListType::Bullet => ListKind::Bullet,
+                ListType::Ordered => ListKind::Ordered,
+            };
+            let mut items = Vec::new();
+            for child in node.children() {
+                if let NodeValue::Item(_li) = &child.data.borrow().value {
+                    let task = if let Some(ch) = child.first_child() {
+                        if let NodeValue::TaskItem(checked) = ch.data.borrow().value {
+                            Some(checked.is_some())
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    };
+                    items.push(ListItem {
+                        children: collect_blocks(child),
+                        task,
+                    });
+                }
+            }
+            let start = if l.start == 1 {
+                None
+            } else {
+                Some(l.start as u64)
+            };
+            Some(Block::List {
+                kind,
+                start,
+                tight: l.tight,
+                items,
+            })
+        }
+        NodeValue::Table(t) => {
+            // Alignments
+            let align = t
+                .alignments
+                .iter()
+                .map(|a| match a {
+                    TableAlignment::None => proofdown_ast::TableAlign::None,
+                    TableAlignment::Left => proofdown_ast::TableAlign::Left,
+                    TableAlignment::Center => proofdown_ast::TableAlign::Center,
+                    TableAlignment::Right => proofdown_ast::TableAlign::Right,
+                })
+                .collect::<Vec<_>>();
+            // Gather rows; use TableRow(bool) header flag where provided
+            let mut header: Option<proofdown_ast::TableRow> = None;
+            let mut rows = Vec::new();
+            for ch in node.children() {
+                if let NodeValue::TableRow(is_header) = ch.data.borrow().value {
+                    let row = map_table_row(ch);
+                    if is_header && header.is_none() {
+                        header = Some(row);
+                    } else {
+                        rows.push(row);
+                    }
+                }
+            }
+            Some(Block::Table {
+                align,
+                header,
+                rows,
+            })
+        }
+        NodeValue::HtmlBlock(..) => None, // drop raw HTML blocks
+        NodeValue::Text(t) if t.is_empty() => None,
+        _ => None,
+    }
+}
+
+fn map_table_row<'a>(row: &'a AstNode<'a>) -> proofdown_ast::TableRow {
+    // Map a Comrak TableRow into a TableRow with inline cells.
+    let mut cells: Vec<Vec<Inline>> = Vec::new();
+    for cell in row.children() {
+        if let NodeValue::TableCell = &cell.data.borrow().value {
+            let mut inlines: Vec<Inline> = Vec::new();
+            // Some parsers wrap cell contents in a Paragraph; support both.
+            for n in cell.children() {
+                match &n.data.borrow().value {
+                    NodeValue::Paragraph => {
+                        // Paragraph's children are inline nodes.
+                        inlines.extend(collect_inlines(n));
+                    }
+                    _ => {
+                        // Try to map directly as an inline, otherwise collect any inline children.
+                        if let Some(i) = map_inline(n) {
+                            inlines.push(i);
+                        } else {
+                            inlines.extend(collect_inlines(n));
+                        }
+                    }
+                }
+            }
+            cells.push(inlines);
+        }
+    }
+    proofdown_ast::TableRow { cells }
+}
+
+fn collect_blocks<'a>(node: &'a AstNode<'a>) -> Vec<Block> {
+    let mut v = Vec::new();
+    for ch in node.children() {
+        if let Some(b) = map_block(ch) {
+            v.push(b);
+        }
+    }
+    v
+}
+
+fn collect_inlines<'a>(node: &'a AstNode<'a>) -> Vec<Inline> {
+    let mut out = Vec::new();
+    for ch in node.children() {
+        if let Some(i) = map_inline(ch) {
+            out.push(i);
+        }
+    }
+    out
+}
+
+fn map_inline<'a>(node: &'a AstNode<'a>) -> Option<Inline> {
+    match &node.data.borrow().value {
+        NodeValue::Text(t) => Some(Inline::Text {
+            text: t.to_string(),
+        }),
+        NodeValue::SoftBreak => Some(Inline::SoftBreak),
+        NodeValue::LineBreak => Some(Inline::HardBreak),
+        NodeValue::Code(code) => Some(Inline::Code {
+            text: code.literal.clone(),
+        }),
+        NodeValue::Strikethrough => Some(Inline::Strikethrough {
+            children: collect_inlines(node),
+        }),
+        NodeValue::Emph => Some(Inline::Emph {
+            children: collect_inlines(node),
+        }),
+        NodeValue::Strong => Some(Inline::Strong {
+            children: collect_inlines(node),
+        }),
+        NodeValue::Link(l) => Some(Inline::Link {
+            url: l.url.to_string(),
+            title: if l.title.is_empty() {
+                None
+            } else {
+                Some(l.title.to_string())
+            },
+            children: collect_inlines(node),
+        }),
+        NodeValue::Image(l) => Some(Inline::Image {
+            url: l.url.to_string(),
+            title: if l.title.is_empty() {
+                None
+            } else {
+                Some(l.title.to_string())
+            },
+            alt: collect_inlines(node)
+                .into_iter()
+                .filter_map(|i| match i {
+                    Inline::Text { text } => Some(text),
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+                .join(" "),
+        }),
+        NodeValue::HtmlInline(..) => None,
+        _ => None,
+    }
 }

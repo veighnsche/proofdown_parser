@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "API Collections",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "API Collections",
       "type": "Heading"
     },
     {

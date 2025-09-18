@@ -46,10 +46,41 @@ pub struct Document { pub blocks: Vec<Block> }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Block {
-    Heading { level: u8, text: String },
-    Paragraph { text: String },
+    Heading { level: u8, inlines: Vec<Inline> },
+    Paragraph { inlines: Vec<Inline> },
+    BlockQuote { children: Vec<Block> },
+    ThematicBreak,
+    CodeBlock { info: String, text: String },
+    List { kind: ListKind, start: Option<u64>, tight: bool, items: Vec<ListItem> },
+    Table { align: Vec<TableAlign>, header: Option<TableRow>, rows: Vec<TableRow> },
     Component(Component),
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ListKind { Bullet, Ordered }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ListItem { pub children: Vec<Block>, pub task: Option<bool> }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum Inline {
+    Text { text: String },
+    Emph { children: Vec<Inline> },
+    Strong { children: Vec<Inline> },
+    Strikethrough { children: Vec<Inline> },
+    Code { text: String },
+    SoftBreak,
+    HardBreak,
+    Link { url: String, title: Option<String>, children: Vec<Inline> },
+    Image { url: String, title: Option<String>, alt: String },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum TableAlign { None, Left, Center, Right }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TableRow { pub cells: Vec<Vec<Inline>> }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Component {
@@ -75,6 +106,7 @@ Notes:
   - `Block` uses `#[serde(tag = "type")]` with values: `"Heading"`, `"Paragraph"`, `"Component"`.
   - Field names are stable as shown.
 - `parse()` MUST be deterministic: same input ⇒ same AST byte-for-byte under serde JSON.
+- CommonMark support adopts a stable subset: no raw HTML blocks/inline; output is structured blocks/inlines only.
 - `parse()` returns only syntax/structure errors; semantic errors are out-of-scope here.
 
 ## 5) Error Model (forward contract)

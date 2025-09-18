@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Fuzzing Results",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "Fuzzing Results",
       "type": "Heading"
     },
     {

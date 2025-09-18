@@ -7,7 +7,7 @@
 [![Rust Edition](https://img.shields.io/badge/rust-2021-orange.svg)](Cargo.toml)
 [![MSRV](https://img.shields.io/badge/MSRV-1.75%2B-informational.svg)](Cargo.toml)
 
-Proofdown Parser parses Proofdown (PML: Proof Markup Language) into a deterministic, typed AST (`proofdown_ast`) for use by validators, renderers, CLIs, and WASM targets. The grammar is intentionally minimal and LL-friendly: headings, paragraphs, and HTML-like components with attributes. v2 adds purely additive semantics (captions, JSON Pointers, table column selectors, text viewer) enforced by a validator.
+Proofdown Parser parses Proofdown (PML: Proof Markup Language) into a deterministic, typed AST (`proofdown_ast`) for use by validators, renderers, CLIs, and WASM targets. The language supports full Markdown (CommonMark + selected GFM: tables, strikethrough, autolink, task lists) plus a small, HTML-like component system. v2 adds purely additive semantics (captions, JSON Pointers, table column selectors, text viewer) enforced by a validator.
 
 Highlights
 
@@ -140,14 +140,14 @@ proofdown_parser = { path = "crates/proofdown_parser/crates/proofdown_parser" }
 
 ## Grammar (Informal Overview)
 
-- Heading: `^#{1,4}\s+TEXT$`
-- Paragraph: non-empty line until blank or component start.
-- Component (block):
+- Markdown blocks: headings (ATX `#..####`), paragraphs, block quotes, thematic breaks, fenced/indented code blocks, lists (unordered/ordered with start/tight), GFM task items, GFM tables (optional header, column alignment).
+- Markdown inlines: text, emphasis, strong, strikethrough (GFM), inline code, soft/hard breaks, links (url/title), images (url/title, alt from inline text).
+- Components (block):
   - Start tag: `<name key="value" ...>` or `<name key="value" ... />`
   - End tag: `</name>` (required unless self-closing)
-  - Children: zero or more blocks until matching end tag.
+  - Children: zero or more blocks (full Markdown supported) until matching end tag.
 - Attributes: `key=value`, quoted with `"..."` or bare until whitespace/`>`.
-  Note: the parser recognizes component syntax generically. Whitelisting component names and attribute bounds is enforced by the validator (see Validation).
+  Note: the parser recognizes component syntax generically. Whitelisting component names and attribute bounds is enforced by the validator (see Validation). Raw HTML blocks/inline are dropped.
 
 ## AST Types (proofdown_ast crate)
 
@@ -160,10 +160,36 @@ pub struct Document { pub blocks: Vec<Block> }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Block {
-    Heading { level: u8, text: String },
-    Paragraph { text: String },
+    Heading { level: u8, inlines: Vec<Inline> },
+    Paragraph { inlines: Vec<Inline> },
+    BlockQuote { children: Vec<Block> },
+    ThematicBreak,
+    CodeBlock { info: String, text: String },
+    List { kind: ListKind, start: Option<u64>, tight: bool, items: Vec<ListItem> },
+    Table { align: Vec<TableAlign>, header: Option<TableRow>, rows: Vec<TableRow> },
     Component(Component),
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ListKind { Bullet, Ordered }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ListItem { pub children: Vec<Block>, pub task: Option<bool> }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum Inline {
+    Text { text: String }, Emph { children: Vec<Inline> }, Strong { children: Vec<Inline> },
+    Strikethrough { children: Vec<Inline> }, Code { text: String }, SoftBreak, HardBreak,
+    Link { url: String, title: Option<String>, children: Vec<Inline> },
+    Image { url: String, title: Option<String>, alt: String }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum TableAlign { None, Left, Center, Right }
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TableRow { pub cells: Vec<Vec<Inline>> }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Component {
@@ -177,7 +203,7 @@ pub struct Component {
 pub struct Attr { pub key: String, pub value: String }
 ```
 
-Note: The `proofdown_ast` crate exists and hosts these types; it will also host a typed error model shared across crates.
+Note: The `proofdown_ast` crate hosts these types and the structured error model shared across crates.
 
 ## Public API
 

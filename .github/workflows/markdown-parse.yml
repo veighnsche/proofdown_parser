@@ -1,0 +1,51 @@
+name: Markdown Parse
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+concurrency:
+  group: MDParse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdown-parse:
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache target dir
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build CLI once
+        run: cargo build -q -p proofdown_cli
+      - name: Parse all Markdown and Proofdown files
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN=./target/debug/pml
+          echo "Collecting Markdown files tracked by git..."
+          mapfile -t md_files < <(git ls-files '*.md' | grep -Ev '^(book/book/|target/|node_modules/)')
+          echo "Found ${#md_files[@]} Markdown files"
+          for f in "${md_files[@]}"; do
+            echo "Parsing $f"
+            "$BIN" parse "$f" --json > /dev/null
+          done
+          echo "Collecting Proofdown .pml fixtures..."
+          mapfile -t pml_files < <(git ls-files '*.pml')
+          for f in "${pml_files[@]}"; do
+            echo "Parsing $f"
+            "$BIN" parse "$f" --json > /dev/null
+          done

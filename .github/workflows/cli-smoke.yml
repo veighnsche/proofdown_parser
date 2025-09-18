@@ -1,0 +1,27 @@
+name: CLI Smoke
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+concurrency:
+  group: CLI-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Parse fixtures (CLI JSON)
+        run: |
+          set -euo pipefail
+          for f in crates/proofdown_parser/tests/fixtures/*.pml; do
+            echo "Parsing $f"
+            cargo run -q -p proofdown_cli -- parse "$f" --json >/dev/null
+          done
+      - name: Validate minimal fixture (CLI JSON)
+        run: |
+          cargo run -q -p proofdown_cli -- validate crates/proofdown_parser/tests/fixtures/minimal.pml --json | grep -E '"ok":[[:space:]]*true'

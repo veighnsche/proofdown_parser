@@ -39,7 +39,7 @@ for f in crates/proofdown_parser/tests/fixtures/*.pml; do
 done
 
 echo "[ci] cli smoke (validate minimal)"
-cargo run -q -p proofdown_cli -- validate crates/proofdown_parser/tests/fixtures/minimal.pml --json | grep '"ok": true' >/dev/null
+cargo run -q -p proofdown_cli -- validate crates/proofdown_parser/tests/fixtures/minimal.pml --json | grep -E '"ok":[[:space:]]*true' >/dev/null
 
 if [[ "$SKIP_WASM" -eq 0 ]]; then
   echo "[ci] wasm build"

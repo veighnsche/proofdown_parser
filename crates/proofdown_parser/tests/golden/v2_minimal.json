@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Build Evidence — {{ commit }}",
+          "type": "Text"
+        }
+      ],
       "level": 1,
-      "text": "Build Evidence — {{ commit }}",
       "type": "Heading"
     },
     {

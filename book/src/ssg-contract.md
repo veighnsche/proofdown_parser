@@ -7,7 +7,30 @@ Stable API and types:
 ```rust
 pub struct Document { pub blocks: Vec<Block> }
 #[serde(tag = "type")]
-pub enum Block { Heading { level: u8, text: String }, Paragraph { text: String }, Component(Component) }
+pub enum Block {
+    Heading { level: u8, inlines: Vec<Inline> },
+    Paragraph { inlines: Vec<Inline> },
+    BlockQuote { children: Vec<Block> },
+    ThematicBreak,
+    CodeBlock { info: String, text: String },
+    List { kind: ListKind, start: Option<u64>, tight: bool, items: Vec<ListItem> },
+    Table { align: Vec<TableAlign>, header: Option<TableRow>, rows: Vec<TableRow> },
+    Component(Component)
+}
+
+pub enum ListKind { Bullet, Ordered }
+pub struct ListItem { pub children: Vec<Block>, pub task: Option<bool> }
+pub enum TableAlign { None, Left, Center, Right }
+pub struct TableRow { pub cells: Vec<Vec<Inline>> }
+
+#[serde(tag = "type")]
+pub enum Inline {
+    Text { text: String }, Emph { children: Vec<Inline> }, Strong { children: Vec<Inline> },
+    Strikethrough { children: Vec<Inline> }, Code { text: String }, SoftBreak, HardBreak,
+    Link { url: String, title: Option<String>, children: Vec<Inline> },
+    Image { url: String, title: Option<String>, alt: String }
+}
+
 pub struct Component { pub name: String, pub attrs: Vec<Attr>, pub children: Vec<Block>, pub self_closing: bool }
 pub struct Attr { pub key: String, pub value: String }
 
@@ -22,4 +45,4 @@ pub struct ParseError { pub line: usize, pub col: usize, pub kind: ErrorKind, pu
 // Limits: depth ≤ 16, nodes ≤ 50k, input ≤ 1 MiB
 ```
 
-Determinism and golden tests ensure byte-for-byte stability. See the spec file for the canonical text.
+Determinism and golden tests ensure byte-for-byte stability. Raw HTML blocks/inline are dropped for safety; use components or Markdown constructs instead. See the spec file for the canonical text.

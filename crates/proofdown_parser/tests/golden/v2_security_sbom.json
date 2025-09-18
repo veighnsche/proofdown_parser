@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Security & Supply Chain",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "Security & Supply Chain",
       "type": "Heading"
     },
     {

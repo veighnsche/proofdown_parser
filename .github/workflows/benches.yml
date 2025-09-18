@@ -1,0 +1,20 @@
+name: Benches
+
+on:
+  pull_request:
+    paths:
+      - 'crates/proofdown_parser/**'
+      - '.github/workflows/benches.yml'
+
+concurrency:
+  group: Benches-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build benches
+        run: cargo bench -p proofdown_parser --no-run

@@ -6,6 +6,7 @@
 - Determinism
   - Same input ⇒ same AST byte-for-byte under serde JSON; golden tests verify this.
 - Safety model
-  - No scripting/HTML content; any rendering layers must escape content.
+  - Raw HTML blocks/inline are dropped by the parser for safety; use components instead. Rendering layers must escape content.
   - Artifacts are content-addressed; callers verify digest before render.
   - Fail closed on digest mismatches or missing artifacts.
+  - Markdown tables, strikethrough, autolinks, and task lists are supported (GFM subset) without enabling raw HTML.

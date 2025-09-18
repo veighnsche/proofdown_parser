@@ -1,0 +1,26 @@
+name: mdBook
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+concurrency:
+  group: mdBook-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mdbook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install mdBook
+        run: cargo install mdbook --version ^0.4
+      - name: Build book
+        run: mdbook build book
+      - name: Upload book artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofdown-book
+          path: book/book/

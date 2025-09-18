@@ -22,12 +22,9 @@ fn v2_fixtures_match_golden() {
         let doc = proofdown_parser::parse(&pml).expect("parse ok");
         let actual = serde_json::to_value(&doc).expect("json value");
         let golden_path = Path::new("tests/golden").join(format!("{}.json", stem));
-        if !golden_path.exists() {
-            if update {
-                let pretty = serde_json::to_string_pretty(&actual).expect("pretty json");
-                fs::write(&golden_path, pretty).expect("write golden");
-            }
-            // Skip if golden is missing and not updating
+        if update {
+            let pretty = serde_json::to_string_pretty(&actual).expect("pretty json");
+            fs::write(&golden_path, pretty).expect("write golden");
             continue;
         }
         let expected_str = fs::read_to_string(&golden_path).expect("read golden");

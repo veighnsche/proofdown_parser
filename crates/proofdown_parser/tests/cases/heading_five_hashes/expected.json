@@ -1,8 +1,14 @@
 {
   "blocks": [
     {
-      "text": "##### Too many hashes",
-      "type": "Paragraph"
+      "inlines": [
+        {
+          "text": "Too many hashes",
+          "type": "Text"
+        }
+      ],
+      "level": 5,
+      "type": "Heading"
     }
   ]
 }

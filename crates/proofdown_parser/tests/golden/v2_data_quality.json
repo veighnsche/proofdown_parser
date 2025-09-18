@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Data Quality",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "Data Quality",
       "type": "Heading"
     },
     {

@@ -1,0 +1,21 @@
+name: WASM Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+concurrency:
+  group: Wasm-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Build proofdown_wasm (wasm32)
+        run: cargo build -p proofdown_wasm --no-default-features --features wasm --target wasm32-unknown-unknown

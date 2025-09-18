@@ -6,7 +6,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 proofdown_ast = { path = "../proofdown_ast" }
-comrak = { version = "0.21", default-features = false, features = ["strings"] }
+comrak = "0.21"
 
 [dev-dependencies]
 serde_json = "1"

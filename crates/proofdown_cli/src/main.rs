@@ -68,12 +68,12 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
             std::process::exit(3);
         }
     };
-    match if lims.is_some() {
-        let l = lims.unwrap();
+    let parse_res = if let Some(l) = lims {
         parse_with_limits(&input, l)
     } else {
         parse(&input)
-    } {
+    };
+    match parse_res {
         Ok(doc) => {
             if json {
                 if pretty {
@@ -191,17 +191,15 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
             eprintln!("Validation error: {}", e);
         }
         std::process::exit(2);
-    } else {
-        if json {
-            let payload = if pretty {
-                serde_json::to_string_pretty(&json!({"ok": true}))?
-            } else {
-                json!({"ok": true}).to_string()
-            };
-            println!("{}", payload);
+    } else if json {
+        let payload = if pretty {
+            serde_json::to_string_pretty(&json!({"ok": true}))?
         } else {
-            println!("OK");
-        }
+            json!({"ok": true}).to_string()
+        };
+        println!("{}", payload);
+    } else {
+        println!("OK");
     }
     Ok(())
 }

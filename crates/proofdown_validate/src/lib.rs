@@ -97,13 +97,10 @@ fn analyze(doc: &Document) -> (usize, usize) {
         *out_depth = (*out_depth).max(cur_depth);
         for b in blocks {
             *out_nodes += 1;
-            match b {
-                Block::Component(c) => {
-                    if !c.children.is_empty() {
-                        walk(&c.children, cur_depth + 1, out_depth, out_nodes);
-                    }
+            if let Block::Component(c) = b {
+                if !c.children.is_empty() {
+                    walk(&c.children, cur_depth + 1, out_depth, out_nodes);
                 }
-                _ => {}
             }
         }
     }
@@ -114,14 +111,11 @@ fn analyze(doc: &Document) -> (usize, usize) {
 }
 
 fn validate_block(b: &Block) -> Result<(), ValidateError> {
-    match b {
-        Block::Component(c) => {
-            validate_component(c)?;
-            for ch in &c.children {
-                validate_block(ch)?;
-            }
+    if let Block::Component(c) = b {
+        validate_component(c)?;
+        for ch in &c.children {
+            validate_block(ch)?;
         }
-        _ => {}
     }
     Ok(())
 }
@@ -143,7 +137,7 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
                 });
             }
             let cols = parse_int_attr(c, "cols")?;
-            if cols < 1 || cols > 6 {
+            if !(1..=6).contains(&cols) {
                 return Err(ValidateError::AttrBound {
                     name: c.name.clone(),
                     key: "cols".into(),
@@ -153,7 +147,7 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
             }
             if seen.contains("gap") {
                 let gap = parse_int_attr(c, "gap")?;
-                if gap < 0 || gap > 64 {
+                if !(0..=64).contains(&gap) {
                     return Err(ValidateError::AttrBound {
                         name: c.name.clone(),
                         key: "gap".into(),
@@ -193,7 +187,7 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
                     }
                     if has_attr(c, "depth") {
                         let d = parse_int_attr(c, "depth")?;
-                        if d < 0 || d > 8 {
+                        if !(0..=8).contains(&d) {
                             return Err(ValidateError::AttrBound {
                                 name: c.name.clone(),
                                 key: "depth".into(),
@@ -219,7 +213,7 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
                     require_attr_present(c, "alt")?;
                     if has_attr(c, "max_height") {
                         let mh = parse_int_attr(c, "max_height")?;
-                        if mh < 128 || mh > 2048 {
+                        if !(128..=2048).contains(&mh) {
                             return Err(ValidateError::AttrBound {
                                 name: c.name.clone(),
                                 key: "max_height".into(),
@@ -249,7 +243,7 @@ fn validate_component(c: &proofdown_ast::Component) -> Result<(), ValidateError>
                     // v2: text viewer with max_lines 1..500 and optional caption
                     if has_attr(c, "max_lines") {
                         let ml = parse_int_attr(c, "max_lines")?;
-                        if ml < 1 || ml > 500 {
+                        if !(1..=500).contains(&ml) {
                             return Err(ValidateError::AttrBound {
                                 name: c.name.clone(),
                                 key: "max_lines".into(),
@@ -389,10 +383,8 @@ fn are_valid_columns(s: &str) -> bool {
             if !is_valid_json_pointer(t) {
                 return false;
             }
-        } else {
-            if !is_simple_key(t) {
-                return false;
-            }
+        } else if !is_simple_key(t) {
+            return false;
         }
     }
     true

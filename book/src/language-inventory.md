@@ -4,15 +4,26 @@ This is a normative inventory of Proofdown constructs, their attributes, and con
 
 ## Blocks
 
-- Heading
-  - Form: `#`..`####` followed by a single space and the title.
-  - Levels: 1..4 (higher counts are treated as paragraphs by parsers aligned to current spec).
-  - Title: trimmed of surrounding spaces; empty titles are treated as paragraphs.
-- Paragraph
-  - Consecutive non-empty lines until a blank line or a heading/component begins.
-- Component
+- Markdown (CommonMark + selected GFM)
+  - Headings (ATX) `#..####` levels 1..4
+  - Paragraphs
+  - Block quotes (arbitrary nested blocks)
+  - Thematic breaks (`---`, `***`, `___`)
+  - Code blocks (fenced/indented) with optional info string
+  - Lists (unordered/ordered) with `start` (ordered), `tight`, and GFM task items (`[ ]`/`[x]`)
+  - Tables (GFM) with optional header row and per-column alignment
+- Components
   - HTML-like tags: `<name key="value" key2=value2>`; `</name>` closes; `<name ... />` self-closing.
   - Attributes: quoted or bare; preserved exactly as strings in AST.
+  - Children: zero or more blocks; components MAY contain full Markdown.
+
+## Markdown inlines
+
+- Text
+- Emphasis, Strong, Strikethrough (GFM)
+- Inline code
+- Soft/Hard line breaks
+- Links (url + optional title), Images (url + optional title; alt from inline text)
 
 ## Structural Components
 
@@ -41,4 +52,4 @@ This is a normative inventory of Proofdown constructs, their attributes, and con
 
 - Default: `max_depth=16`, `max_nodes=50k`, `max_input_bytes=1MiB`.
 - Determinism: same input ⇒ same AST byte-for-byte under serde JSON.
-- Safety: no I/O in parser; validator enforces whitelist/attribute bounds; renderer escapes and enforces viewer limits.
+- Safety: no I/O in parser; raw HTML blocks/inline are dropped; validator enforces whitelist/attribute bounds; renderer escapes and enforces viewer limits.

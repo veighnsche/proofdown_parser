@@ -6,45 +6,106 @@ pub struct Document {
     pub blocks: Vec<Block>,
 }
 
+/// Table column alignment
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum TableAlign {
+    None,
+    Left,
+    Center,
+    Right,
+}
+
+/// Table row consisting of inline cell contents per column
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TableRow {
+    pub cells: Vec<Vec<Inline>>,
+}
+
 /// Block-level nodes.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Block {
     /// ATX-style heading with CommonMark inlines
-    Heading { level: u8, inlines: Vec<Inline> },
+    Heading {
+        level: u8,
+        inlines: Vec<Inline>,
+    },
     /// Paragraph with CommonMark inlines
-    Paragraph { inlines: Vec<Inline> },
+    Paragraph {
+        inlines: Vec<Inline>,
+    },
     /// Block quote containing nested blocks
-    BlockQuote { children: Vec<Block> },
+    BlockQuote {
+        children: Vec<Block>,
+    },
     /// Thematic break (horizontal rule)
     ThematicBreak,
     /// Fenced/indented code block with optional info string
-    CodeBlock { info: String, text: String },
+    CodeBlock {
+        info: String,
+        text: String,
+    },
     /// List of items (ordered or bullet). `tight` indicates tight vs loose formatting.
-    List { kind: ListKind, start: Option<u64>, tight: bool, items: Vec<ListItem> },
+    List {
+        kind: ListKind,
+        start: Option<u64>,
+        tight: bool,
+        items: Vec<ListItem>,
+    },
+    /// GitHub-flavored Markdown table (inlines only inside cells)
+    Table {
+        align: Vec<TableAlign>,
+        header: Option<TableRow>,
+        rows: Vec<TableRow>,
+    },
     Component(Component),
 }
 
 /// List kind
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum ListKind { Bullet, Ordered }
+pub enum ListKind {
+    Bullet,
+    Ordered,
+}
 
-/// List item containing nested blocks
+/// List item containing nested blocks and optional GFM task marker
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct ListItem { pub children: Vec<Block> }
+pub struct ListItem {
+    pub children: Vec<Block>,
+    pub task: Option<bool>,
+}
 
 /// Inline-level CommonMark nodes
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Inline {
-    Text { text: String },
-    Emph { children: Vec<Inline> },
-    Strong { children: Vec<Inline> },
-    Code { text: String },
+    Text {
+        text: String,
+    },
+    Emph {
+        children: Vec<Inline>,
+    },
+    Strong {
+        children: Vec<Inline>,
+    },
+    Strikethrough {
+        children: Vec<Inline>,
+    },
+    Code {
+        text: String,
+    },
     SoftBreak,
     HardBreak,
-    Link { url: String, title: Option<String>, children: Vec<Inline> },
-    Image { url: String, title: Option<String>, alt: String },
+    Link {
+        url: String,
+        title: Option<String>,
+        children: Vec<Inline>,
+    },
+    Image {
+        url: String,
+        title: Option<String>,
+        alt: String,
+    },
 }
 
 /// Component node with a name, attributes, and optional children.

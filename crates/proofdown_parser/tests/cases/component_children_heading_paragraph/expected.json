@@ -12,12 +12,22 @@
           ],
           "children": [
             {
+              "inlines": [
+                {
+                  "text": "Inside",
+                  "type": "Text"
+                }
+              ],
               "level": 1,
-              "text": "Inside",
               "type": "Heading"
             },
             {
-              "text": "Hello",
+              "inlines": [
+                {
+                  "text": "Hello",
+                  "type": "Text"
+                }
+              ],
               "type": "Paragraph"
             }
           ],

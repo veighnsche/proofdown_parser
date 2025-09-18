@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Contract Verification",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "Contract Verification",
       "type": "Heading"
     },
     {

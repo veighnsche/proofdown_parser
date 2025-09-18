@@ -1,16 +1,38 @@
 {
   "blocks": [
     {
-      "text": "Line1 Line2",
+      "inlines": [
+        {
+          "text": "Line1",
+          "type": "Text"
+        },
+        {
+          "type": "SoftBreak"
+        },
+        {
+          "text": "Line2",
+          "type": "Text"
+        }
+      ],
       "type": "Paragraph"
     },
     {
+      "inlines": [
+        {
+          "text": "Heading",
+          "type": "Text"
+        }
+      ],
       "level": 1,
-      "text": "Heading",
       "type": "Heading"
     },
     {
-      "text": "Paragraph",
+      "inlines": [
+        {
+          "text": "Paragraph",
+          "type": "Text"
+        }
+      ],
       "type": "Paragraph"
     }
   ]

@@ -1,4 +1,4 @@
-use proofdown_ast::{Attr, Block, Component, Document};
+use proofdown_ast::{Attr, Block, Component, Document, Inline};
 
 #[test]
 fn document_serde_roundtrip() {
@@ -6,10 +6,14 @@ fn document_serde_roundtrip() {
         blocks: vec![
             Block::Heading {
                 level: 2,
-                text: "Title".into(),
+                inlines: vec![Inline::Text {
+                    text: "Title".into(),
+                }],
             },
             Block::Paragraph {
-                text: "Hello".into(),
+                inlines: vec![Inline::Text {
+                    text: "Hello".into(),
+                }],
             },
             Block::Component(Component {
                 name: "card".into(),
@@ -18,7 +22,9 @@ fn document_serde_roundtrip() {
                     value: "T".into(),
                 }],
                 children: vec![Block::Paragraph {
-                    text: "inside".into(),
+                    inlines: vec![Inline::Text {
+                        text: "inside".into(),
+                    }],
                 }],
                 self_closing: false,
             }),

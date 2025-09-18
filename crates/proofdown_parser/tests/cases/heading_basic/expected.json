@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Title",
+          "type": "Text"
+        }
+      ],
       "level": 1,
-      "text": "Title",
       "type": "Heading"
     }
   ]

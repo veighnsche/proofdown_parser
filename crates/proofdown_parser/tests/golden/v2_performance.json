@@ -1,8 +1,13 @@
 {
   "blocks": [
     {
+      "inlines": [
+        {
+          "text": "Performance & Load",
+          "type": "Text"
+        }
+      ],
       "level": 2,
-      "text": "Performance & Load",
       "type": "Heading"
     },
     {

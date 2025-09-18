@@ -1,0 +1,25 @@
+name: Fuzz Smoke
+
+on:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * *'
+
+concurrency:
+  group: Fuzz-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+      - name: Build fuzz target
+        run: cargo fuzz build
+      - name: Run fuzz smoke (short)
+        env:
+          RUST_BACKTRACE: 1
+        run: cargo fuzz run parse -- -runs=1000

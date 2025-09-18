@@ -13,7 +13,7 @@ fn parse_all_v2_fixtures() {
         if path.extension().and_then(|s| s.to_str()) == Some("pml") {
             found = true;
             let text = fs::read_to_string(&path).expect("read fixture file");
-            parse(&text).expect(&format!("parse ok for {}", path.display()));
+            parse(&text).unwrap_or_else(|_| panic!("parse ok for {}", path.display()));
         }
     }
 

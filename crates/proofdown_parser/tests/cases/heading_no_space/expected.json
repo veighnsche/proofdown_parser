@@ -1,7 +1,12 @@
 {
   "blocks": [
     {
-      "text": "#Title",
+      "inlines": [
+        {
+          "text": "#Title",
+          "type": "Text"
+        }
+      ],
       "type": "Paragraph"
     }
   ]
