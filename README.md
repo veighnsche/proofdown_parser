@@ -1,23 +1,65 @@
 # proofdown_parser
 
-Proofdown Parser parses Proofdown (Component Markdown, CMD) into a deterministic, typed AST for rendering and fragment extraction within the Provenance system.
+[![CI](https://img.shields.io/github/actions/workflow/status/veighnsche/proofdown_parser/ci.yml?branch=main&label=CI)](https://github.com/veighnsche/proofdown_parser/actions/workflows/ci.yml)
+[![mdBook](https://img.shields.io/badge/docs-mdBook-blue.svg)](book/book/index.html)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue?logo=github)](https://veighnsche.github.io/proofdown_parser/)
+[![License: MIT/Apache-2.0](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](#license)
+[![Rust Edition](https://img.shields.io/badge/rust-2021-orange.svg)](Cargo.toml)
+[![MSRV](https://img.shields.io/badge/MSRV-1.75%2B-informational.svg)](Cargo.toml)
 
-This README summarizes the v1 parser scope, grammar, AST, API, limits, security model, component registry, and roadmap, drawing from `.specs/00_proofdown_parser.md`, `.plans/00_workspace_plan.md`, and the current crate implementation at `crates/proofdown_parser/src/lib.rs`.
+Proofdown Parser parses Proofdown (PML: Proof Markup Language) into a deterministic, typed AST (`proofdown_ast`) for use by validators, renderers, CLIs, and WASM targets. The grammar is intentionally minimal and LL-friendly: headings, paragraphs, and HTML-like components with attributes. v2 adds purely additive semantics (captions, JSON Pointers, table column selectors, text viewer) enforced by a validator.
+
+Highlights
+
+- Deterministic AST JSON for golden tests and cross-platform parity
+- Syntax-only parser; semantics enforced downstream by `proofdown_validate`
+- Strict limits (depth, nodes, input size) and robust error model
+- CLI (`pml`) for parse/validate with JSON output and stable exit codes
+- WASM build for browser use; mdBook docs for language and contract
 
 ## Quick links
 
-- Language v1 spec: [.specs/01_proofdown_language_v1.md](./.specs/01_proofdown_language_v1.md)
-- Artifact-first semantics: [.specs/02_artifact_first_language_spec.md](./.specs/02_artifact_first_language_spec.md)
-- Language v2 spec (additive): [.specs/03_proofdown_language_v2.md](./.specs/03_proofdown_language_v2.md)
-- Authoring guide (LLM-friendly): [.docs/proofdown-authoring-guide.md](./.docs/proofdown-authoring-guide.md)
-- Testing artifacts catalog: [.docs/testing-artifacts/README.md](./.docs/testing-artifacts/README.md)
-- Table row schemas (JSON): [.specs/schemas/README.md](./.specs/schemas/README.md)
+- mdBook (local artifact): [book/book/index.html](book/book/index.html)
+- mdBook (GitHub Pages): https://veignsche.github.io/proofdown_parser/ (optional, if Pages enabled)
+- Language v1 spec: [.specs/01_proofdown_language_v1.md](.specs/01_proofdown_language_v1.md)
+- Additive semantics v2: [.specs/03_proofdown_language_v2.md](.specs/03_proofdown_language_v2.md)
+- Artifact-first semantics: [.specs/02_artifact_first_language_spec.md](.specs/02_artifact_first_language_spec.md)
+- Authoring guide (LLM-friendly): [.docs/proofdown-authoring-guide.md](.docs/proofdown-authoring-guide.md)
+- Testing artifacts catalog: [.docs/testing-artifacts/README.md](.docs/testing-artifacts/README.md)
+- Table row schemas (JSON): [.specs/schemas/README.md](.specs/schemas/README.md)
+- SSG contract (stable API/AST): [.specs/10_contract_with_provenance_ssg.md](.specs/10_contract_with_provenance_ssg.md)
 
 ## Status
 
-- Maturity: MVP in-repo parser crate with a minimal, pure parser.
-- Implemented API: `parse(&str) -> anyhow::Result<Document>` and helpers.
-- Upcoming: typed error model (`ParseError`/`ErrorKind`), whitelist + attribute validation, limits enforcement, link macro, CLI, and WASM bindings.
+- Stable API: `parse(&str) -> Result<Document, ParseError>`, `parse_with_limits(&str, ParserLimits)`
+- Determinism: enforced by golden JSON tests across v1/v2 fixtures
+- Validator: `proofdown_validate` enforces whitelist and bounds (v2 features)
+- CLI: `pml parse|validate` with JSON outputs; standard exit codes
+- WASM: `proofdown_wasm` target; CI job builds; demo scaffold in `examples/wasm/`
+
+## Local CI (preflight)
+
+Run a local equivalent of the CI to avoid surprises before pushing:
+
+```bash
+bash scripts/ci_local.sh                # full run
+bash scripts/ci_local.sh --skip-wasm --skip-mdbook --skip-fuzz  # faster loop
+```
+
+This mirrors: fmt, clippy, tests, schema checks, benches, CLI smoke over fixtures, optional wasm/mdBook builds, and fuzz smoke.
+
+---
+
+## Legacy README (historical, kept for context)
+
+## Status
+
+- Maturity: Production-ready parser crate with typed errors, validator, CLI, and WASM build.
+- Implemented API: `parse(&str) -> Result<Document, ParseError>`, `parse_with_limits(&str, ParserLimits)`; helper `find_attr`.
+- Validator: `proofdown_validate::validate(&Document, Option<&Limits>) -> Result<(), ValidateError>` enforces whitelist and attribute bounds (v2 features included).
+- CLI: `pml parse|validate` with `--json`, `--pretty`, and `--limits.*` flags; documented exit codes.
+- WASM: `proofdown_wasm` exports `wasm_parse(input: &str) -> String` JSON payload; CI builds wasm32 target.
+- Next: link macro parsing (planned v1.1) and includes (planned v1.2).
 
 ## What is Proofdown?
 
@@ -57,6 +99,8 @@ members = [
   "crates/proofdown_validate",
   "crates/proofdown_cli",
   "crates/proofdown_wasm",
+  "crates/schema_check",
+  "crates/proofdown_integration_example",
 ]
 resolver = "2"
 ```
@@ -103,7 +147,7 @@ proofdown_parser = { path = "crates/proofdown_parser/crates/proofdown_parser" }
   - End tag: `</name>` (required unless self-closing)
   - Children: zero or more blocks until matching end tag.
 - Attributes: `key=value`, quoted with `"..."` or bare until whitespace/`>`.
-- Whitelist: `grid|section|card|artifact.(summary|table|json|markdown|image|link)`.
+  Note: the parser recognizes component syntax generically. Whitelisting component names and attribute bounds is enforced by the validator (see Validation).
 
 ## AST Types (proofdown_ast crate)
 
@@ -117,7 +161,7 @@ pub struct Document { pub blocks: Vec<Block> }
 #[serde(tag = "type")]
 pub enum Block {
     Heading { level: u8, text: String },
-    Paragraph(String),
+    Paragraph { text: String },
     Component(Component),
 }
 
@@ -150,10 +194,10 @@ Helper:
 pub fn find_attr<'a>(attrs: &'a [Attr], key: &str) -> Option<&'a str>
 ```
 
-Planned API additions:
+Related crates/APIs:
 
-- `validate(doc: &Document, limits: &Limits) -> Result<(), ParseError>`
-- WASM surface (via `wasm-bindgen`): `wasm_parse(input: &str) -> JsValue`
+- `proofdown_validate::validate(doc: &Document, limits: Option<&Limits>) -> Result<(), ValidateError>`
+- WASM surface (via `wasm-bindgen`): `wasm_parse(input: &str) -> String` returning JSON `{ ok, doc|err }`
 
 ## Usage Example
 
@@ -192,7 +236,7 @@ let doc = parse(input)?; // Document with typed blocks/components
 </grid>
 ```
 
-## Link Macro (ABNF excerpt)
+## Link Macro (planned v1.1, ABNF excerpt)
 
 ```abnf
 link      = "[[" SP* target SP* ( "|" SP* label SP* )? "]]"
@@ -251,7 +295,7 @@ Note: These are the component names used downstream by the SSG. The parser recog
 
 - Pure functions; no environment access.
 - Deterministic traversal order and attribute normalization.
-- Limits are a parser responsibility. Default limits (depth ≤ 16, nodes ≤ 50k, input ≤ 1 MiB). Breaches produce errors (structured error model planned).
+- Limits are a parser responsibility. Default limits (depth ≤ 16, nodes ≤ 50k, input ≤ 1 MiB). Breaches produce errors (structured error model implemented).
 
 ## Security Model
 
@@ -342,13 +386,14 @@ pub struct ParseError { pub line: usize, pub col: usize, pub kind: ErrorKind, pu
 
 Parser returns `ParseError` with best-effort line/col and kind on syntax and limit failures.
 
-## CLI and WASM (scaffolded)
+## CLI and WASM (implemented)
 
 - CLI (`proofdown_cli`):
-  - `pml parse <file>` → exit non-zero on error; `--json` dumps AST JSON.
-  - `pml validate <file>` → runs whitelist/limits validation.
+  - `pml parse <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]` (exit codes: 0 OK, 1 parse error, 3 IO/usage)
+  - `pml validate <file> [--json] [--pretty] [--limits.depth=N] [--limits.nodes=N] [--limits.input-size=BYTES]` (exit codes: 0 OK, 1 parse error, 2 validation error, 3 IO/usage)
+  - Top-level: `--help|-h`, `--version|-V`
 - WASM (`proofdown_wasm`):
-  - `wasm_parse(input: &str) -> String` returning a JSON string with shape `{ ok: boolean, doc?: Document, err?: { line, col, kind, msg } }` (via optional `wasm` feature and `wasm-bindgen`).
+  - `wasm_parse(input: &str) -> String` returning a JSON string `{ ok, doc|err }` (enable `wasm` feature; build for `wasm32-unknown-unknown`).
 
 ## Integration with Parent Workspace
 
