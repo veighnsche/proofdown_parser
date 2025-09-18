@@ -12,7 +12,9 @@
 //! - No HTML passthrough. Rendering is separate and deterministic.
 //!
 //! See also: `.specs/00_proofdown_parser.md`, v2 additive notes, and `.docs/proofdown-authoring-guide.md`.
-use proofdown_ast::{Attr, Block, Component, Document, ErrorKind, ParseError};
+use proofdown_ast::{Attr, Block, Component, Document, ErrorKind, Inline, ListItem, ListKind, ParseError};
+use comrak::nodes::{AstNode, ListType, NodeValue};
+use comrak::{parse_document, Arena, ComrakOptions};
 
 type PResult<T> = std::result::Result<T, ParseError>;
 
@@ -43,8 +45,6 @@ pub fn parse(input: &str) -> PResult<Document> {
 }
 
 pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document> {
-    // MVP: parse only headings (#..####), minimal components <grid>, <card>, and artifact.*
-    // Anything else becomes a paragraph.
     // Normalize newlines to \n for consistent scanning across platforms
     let normalized: std::borrow::Cow<'_, str> = if input.contains('\r') {
         std::borrow::Cow::Owned(input.replace("\r\n", "\n").replace('\r', "\n"))
@@ -64,93 +64,20 @@ pub fn parse_with_limits(input: &str, limits: ParserLimits) -> PResult<Document>
     let mut i = 0;
     let mut blocks = Vec::new();
     while i < bytes.len() {
-        while i < bytes.len() && (bytes[i] == b'\n' || bytes[i] == b'\r') {
-            i += 1;
-        }
-        if i >= bytes.len() {
-            break;
-        }
-        if bytes[i] == b'#' {
-            let mut level = 0u8;
-            let mut j = i;
-            while j < bytes.len() && bytes[j] == b'#' && level < 4 {
-                level += 1;
-                j += 1;
-            }
-            // Require a single space after hashes per grammar; otherwise treat as paragraph
-            if j < bytes.len() && bytes[j] == b' ' {
-                j += 1;
-                let start = j;
-                while j < bytes.len() && bytes[j] != b'\n' {
-                    j += 1;
-                }
-                let text = input[start..j].trim().to_string();
-                if !text.is_empty() {
-                    blocks.push(Block::Heading { level, text });
-                    i = j + 1;
-                    continue;
-                }
-                // Empty title: fall through as paragraph
-            }
-            // Treat the entire line as paragraph
-            let mut j2 = i;
-            while j2 < bytes.len() && bytes[j2] != b'\n' {
-                j2 += 1;
-            }
-            let line = input[i..j2].trim();
-            if !line.is_empty() {
-                blocks.push(Block::Paragraph {
-                    text: line.to_string(),
-                });
-            }
-            i = j2 + (j2 < bytes.len()) as usize;
-            continue;
-        }
         if bytes[i] == b'<' {
             let (comp, used) = parse_component(input, i)?;
             blocks.push(Block::Component(comp));
             i += used;
-            continue;
+        } else {
+            // Take chunk until next '<' or EOF and parse as CommonMark
+            let next_lt = input[i..].find('<').map(|o| i + o).unwrap_or(bytes.len());
+            let chunk = &input[i..next_lt];
+            let mut md_blocks = parse_markdown_blocks(chunk);
+            blocks.append(&mut md_blocks);
+            i = next_lt;
         }
-        // Accumulate paragraph across consecutive non-empty lines
-        let mut para = String::new();
-        loop {
-            // Stop if start-of-line is a component or heading
-            if bytes[i] == b'<' || bytes[i] == b'#' {
-                break;
-            }
-            // Read current line
-            let mut j = i;
-            while j < bytes.len() && bytes[j] != b'\n' {
-                j += 1;
-            }
-            let line = input[i..j].trim();
-            if line.is_empty() {
-                i = j + (j < bytes.len()) as usize;
-                break;
-            }
-            if !para.is_empty() {
-                para.push(' ');
-            }
-            para.push_str(line);
-            if j >= bytes.len() {
-                i = j;
-                break;
-            }
-            // Advance to start of next line
-            i = j + 1;
-            // Peek next line start; stop if EOF
-            if i >= bytes.len() {
-                break;
-            }
-            // If next line begins a component or heading, stop accumulating
-            if bytes[i] == b'<' || bytes[i] == b'#' {
-                break;
-            }
-        }
-        if !para.is_empty() {
-            blocks.push(Block::Paragraph { text: para });
-        }
+        // skip any trailing newlines
+        while i < bytes.len() && (bytes[i] == b'\n' || bytes[i] == b'\r') { i += 1; }
     }
     let doc = Document { blocks };
     // Enforce depth and node limits post-parse (defaults for now; configurable in follow-up API)
@@ -209,82 +136,34 @@ fn parse_component(full: &str, base: usize) -> PResult<(Component, usize)> {
         let close_tag = format!("</{}>", name);
         loop {
             let remain = &full[base + used..];
-            if remain.starts_with(&close_tag) {
-                break;
-            }
+            if remain.starts_with(&close_tag) { break; }
             if remain.is_empty() {
-                return Err(mk_err(
-                    full,
-                    base + used,
-                    ErrorKind::Syntax,
-                    format!("unterminated component <{}>", name),
-                ));
-            }
-            if remain.starts_with('\n') || remain.starts_with('\r') {
-                used += 1;
-                continue;
+                return Err(mk_err(full, base + used, ErrorKind::Syntax, format!("unterminated component <{}>", name)));
             }
             if remain.starts_with("</") {
-                // Unexpected close tag (mismatch)
+                // mismatched close
                 let name_end = remain[2..].find('>').unwrap_or(remain.len() - 2);
                 let close_name = &remain[2..2 + name_end].trim();
-                if &format!("</{}>", name) == &format!("</{}>", close_name) {
-                    // matched above in starts_with(check), unreachable here; keep guard
-                    break;
-                } else {
-                    return Err(mk_err(
-                        full,
-                        base + used,
-                        ErrorKind::Syntax,
-                        format!("unexpected close </{}>", close_name),
-                    ));
-                }
-            } else if remain.starts_with('<') {
+                return Err(mk_err(full, base + used, ErrorKind::Syntax, format!("unexpected close </{}>", close_name)));
+            }
+            if remain.starts_with('<') {
                 let (child, cused) = parse_component(full, base + used)?;
                 children.push(Block::Component(child));
                 used += cused;
-            } else if remain.starts_with('#') {
-                let end = remain.find('\n').unwrap_or(remain.len());
-                let line = &remain[..end];
-                let mut level = 0u8;
-                let mut idx = 0;
-                for b in line.as_bytes() {
-                    if *b == b'#' && level < 4 {
-                        level += 1;
-                        idx += 1;
-                    } else {
-                        break;
-                    }
-                }
-                if idx < line.len() && line.as_bytes()[idx] == b' ' {
-                    let text = line[idx + 1..].trim();
-                    if !text.is_empty() {
-                        children.push(Block::Heading {
-                            level,
-                            text: text.to_string(),
-                        });
-                    } else {
-                        children.push(Block::Paragraph {
-                            text: line.trim().to_string(),
-                        });
-                    }
-                } else {
-                    // Not a valid heading; keep as paragraph line
-                    children.push(Block::Paragraph {
-                        text: line.trim().to_string(),
-                    });
-                }
-                used += end + 1;
             } else {
-                let mut end = remain.find('<').unwrap_or(remain.len());
-                if let Some(nl) = remain.find('\n') {
-                    end = end.min(nl);
-                }
-                let text = remain[..end].trim().to_string();
-                if !text.is_empty() {
-                    children.push(Block::Paragraph { text });
-                }
-                used += end;
+                // consume until next '<' or close_tag
+                let idx_close = remain.find(&close_tag);
+                let idx_lt = remain.find('<');
+                let end_rel = match (idx_close, idx_lt) {
+                    (Some(c), Some(l)) => c.min(l),
+                    (Some(c), None) => c,
+                    (None, Some(l)) => l,
+                    (None, None) => remain.len(),
+                };
+                let chunk = &remain[..end_rel];
+                let mut md_children = parse_markdown_blocks(chunk);
+                children.append(&mut md_children);
+                used += end_rel;
             }
         }
         used += close_tag.len();
@@ -368,10 +247,21 @@ fn analyze(doc: &Document) -> (usize, usize) {
         *out_depth = (*out_depth).max(cur_depth);
         for b in blocks {
             *out_nodes += 1;
-            if let Block::Component(c) = b {
-                if !c.children.is_empty() {
-                    walk(&c.children, cur_depth + 1, out_depth, out_nodes);
+            match b {
+                Block::Component(c) => {
+                    if !c.children.is_empty() {
+                        walk(&c.children, cur_depth + 1, out_depth, out_nodes);
+                    }
                 }
+                Block::BlockQuote { children } => {
+                    walk(children, cur_depth, out_depth, out_nodes);
+                }
+                Block::List { items, .. } => {
+                    for it in items {
+                        walk(&it.children, cur_depth, out_depth, out_nodes);
+                    }
+                }
+                _ => {}
             }
         }
     }

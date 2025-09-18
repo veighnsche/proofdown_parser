@@ -10,9 +10,41 @@ pub struct Document {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum Block {
-    Heading { level: u8, text: String },
-    Paragraph { text: String },
+    /// ATX-style heading with CommonMark inlines
+    Heading { level: u8, inlines: Vec<Inline> },
+    /// Paragraph with CommonMark inlines
+    Paragraph { inlines: Vec<Inline> },
+    /// Block quote containing nested blocks
+    BlockQuote { children: Vec<Block> },
+    /// Thematic break (horizontal rule)
+    ThematicBreak,
+    /// Fenced/indented code block with optional info string
+    CodeBlock { info: String, text: String },
+    /// List of items (ordered or bullet). `tight` indicates tight vs loose formatting.
+    List { kind: ListKind, start: Option<u64>, tight: bool, items: Vec<ListItem> },
     Component(Component),
+}
+
+/// List kind
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ListKind { Bullet, Ordered }
+
+/// List item containing nested blocks
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ListItem { pub children: Vec<Block> }
+
+/// Inline-level CommonMark nodes
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum Inline {
+    Text { text: String },
+    Emph { children: Vec<Inline> },
+    Strong { children: Vec<Inline> },
+    Code { text: String },
+    SoftBreak,
+    HardBreak,
+    Link { url: String, title: Option<String>, children: Vec<Inline> },
+    Image { url: String, title: Option<String>, alt: String },
 }
 
 /// Component node with a name, attributes, and optional children.
