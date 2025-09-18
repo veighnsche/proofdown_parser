@@ -1,5 +1,5 @@
 {
-  "col": 1,
+  "col": 14,
   "kind": "Syntax",
   "line": 1,
   "msg": "unterminated quoted attr"

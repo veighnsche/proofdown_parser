@@ -17,3 +17,10 @@ serde_json = { workspace = true }
 proofdown_parser = { path = "../proofdown_parser" }
 proofdown_ast = { path = "../proofdown_ast" }
 wasm-bindgen = { version = "0.2", optional = true }
+
+[profile.release]
+# Optimize for size and link-time optimization for smaller WASM output
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

@@ -19,3 +19,16 @@ jobs:
         run: rustup target add wasm32-unknown-unknown
       - name: Build proofdown_wasm (wasm32)
         run: cargo build -p proofdown_wasm --no-default-features --features wasm --target wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: |
+          curl -sL https://rustwasm.github.io/wasm-pack/installer/init.sh -o /tmp/init.sh
+          bash /tmp/init.sh -f
+      - name: Build with wasm-pack (web target)
+        run: wasm-pack build crates/proofdown_wasm --target web --out-dir examples/wasm/pkg --release
+      - name: Upload demo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-demo
+          path: |
+            examples/wasm/index.html
+            examples/wasm/pkg/

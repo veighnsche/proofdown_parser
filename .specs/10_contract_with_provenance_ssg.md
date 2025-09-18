@@ -102,6 +102,7 @@ pub fn find_attr<'a>(attrs: &'a [Attr], key: &str) -> Option<&'a str>;
 ```
 
 Notes:
+
 - AST is stable under serde JSON for golden testing:
   - `Block` uses `#[serde(tag = "type")]` with values: `"Heading"`, `"Paragraph"`, `"Component"`.
   - Field names are stable as shown.
@@ -130,6 +131,7 @@ pub struct ParseError {
 ```
 
 Contracted behavior:
+
 - All syntax failures MUST provide a best-effort line/column and a helpful message.
 - Limits (see §6) MUST error with `LimitExceeded`.
 - Unknown components/attributes SHALL NOT be errors at parse time (they are semantic); the SSG handles them.
@@ -162,6 +164,7 @@ Contracted behavior:
 ## 9) Minimal Component Recognition (syntax only)
 
 At parse time, the following are recognized as components syntactically (names are case-sensitive strings):
+
 - Structural: `grid`, `section`, `card`
 - Artifact viewers: `artifact.summary`, `artifact.table`, `artifact.json`, `artifact.markdown`, `artifact.image`, `artifact.link`
 

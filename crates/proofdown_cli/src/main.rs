@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::{env, fs, io::Read};
 
 use anyhow::{bail, Result};
 use proofdown_parser::{parse, parse_with_limits, ParserLimits};
@@ -49,23 +49,41 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
     let lims = parse_limits_flags(&args);
-    let input = match fs::read_to_string(&file) {
-        Ok(s) => s,
-        Err(e) => {
+    let input = if file == "-" {
+        let mut buf = String::new();
+        if let Err(e) = std::io::stdin().read_to_string(&mut buf) {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(
-                        &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
-                    )?
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": "-" }}))?
                 } else {
-                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
-                        .to_string()
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": "-" }}).to_string()
                 };
                 eprintln!("{}", payload);
             } else {
-                eprintln!("IO error reading {}: {}", file, e);
+                eprintln!("IO error reading - (stdin): {}\nHint: pass a file path or pipe UTF-8 text via '-'", e);
             }
             std::process::exit(3);
+        }
+        buf
+    } else {
+        match fs::read_to_string(&file) {
+            Ok(s) => s,
+            Err(e) => {
+                if json {
+                    let payload = if pretty {
+                        serde_json::to_string_pretty(
+                            &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
+                        )?
+                    } else {
+                        json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
+                            .to_string()
+                    };
+                    eprintln!("{}", payload);
+                } else {
+                    eprintln!("IO error reading {}: {}\nHint: check the file path and permissions.", file, e);
+                }
+                std::process::exit(3);
+            }
         }
     };
     let parse_res = if let Some(l) = lims {
@@ -99,7 +117,7 @@ fn cmd_parse(mut args: Vec<String>) -> Result<()> {
                 eprintln!("{}", payload);
             } else {
                 eprintln!(
-                    "Parse error at {}:{} [{}]: {}",
+                    "Parse error at {}:{} [{}]: {}\nHint: verify component attributes and tag matching.",
                     e.line,
                     e.col,
                     match e.kind {
@@ -123,23 +141,41 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
     let json = args.iter().any(|a| a == "--json");
     let pretty = args.iter().any(|a| a == "--pretty");
     let lims = parse_limits_flags(&args);
-    let input = match fs::read_to_string(&file) {
-        Ok(s) => s,
-        Err(e) => {
+    let input = if file == "-" {
+        let mut buf = String::new();
+        if let Err(e) = std::io::stdin().read_to_string(&mut buf) {
             if json {
                 let payload = if pretty {
-                    serde_json::to_string_pretty(
-                        &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
-                    )?
+                    serde_json::to_string_pretty(&json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": "-" }}))?
                 } else {
-                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
-                        .to_string()
+                    json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": "-" }}).to_string()
                 };
                 eprintln!("{}", payload);
             } else {
-                eprintln!("IO error reading {}: {}", file, e);
+                eprintln!("IO error reading - (stdin): {}\nHint: pass a file path or pipe UTF-8 text via '-'", e);
             }
             std::process::exit(3);
+        }
+        buf
+    } else {
+        match fs::read_to_string(&file) {
+            Ok(s) => s,
+            Err(e) => {
+                if json {
+                    let payload = if pretty {
+                        serde_json::to_string_pretty(
+                            &json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }}),
+                        )?
+                    } else {
+                        json!({"ok": false, "err": {"code": "IO", "msg": e.to_string(), "path": file }})
+                            .to_string()
+                    };
+                    eprintln!("{}", payload);
+                } else {
+                    eprintln!("IO error reading {}: {}\nHint: check the file path and permissions.", file, e);
+                }
+                std::process::exit(3);
+            }
         }
     };
     let doc = match parse(&input) {
@@ -156,7 +192,7 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
                 eprintln!("{}", payload);
             } else {
                 eprintln!(
-                    "Parse error at {}:{} [{}]: {}",
+                    "Parse error at {}:{} [{}]: {}\nHint: correct the input before validation.",
                     e.line,
                     e.col,
                     match e.kind {
@@ -188,7 +224,7 @@ fn cmd_validate(mut args: Vec<String>) -> Result<()> {
             };
             eprintln!("{}", payload);
         } else {
-            eprintln!("Validation error: {}", e);
+            eprintln!("Validation error: {}\nHint: unknown components/attributes are rejected by the validator.", e);
         }
         std::process::exit(2);
     } else if json {

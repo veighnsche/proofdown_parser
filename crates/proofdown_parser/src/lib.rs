@@ -132,8 +132,16 @@ fn parse_component(full: &str, base: usize) -> PResult<(Component, usize)> {
             ))
         }
     };
-    let rest = &head[name.len()..].trim();
-    let attrs = parse_attrs(rest)?;
+    // Compute absolute base index for the attributes slice to improve error positions.
+    // Use the untrimmed head to find the precise start.
+    let head_raw = &src[1..gt];
+    let head_lead_ws = head_raw.len() - head_raw.trim_start().len();
+    let head_abs_start = base + 1 + head_lead_ws; // absolute index of the start of `head`
+    let rest_pre = &head[name.len()..];
+    let rest_lead_ws = rest_pre.len() - rest_pre.trim_start().len();
+    let rest = rest_pre.trim();
+    let rest_abs_base = head_abs_start + name.len() + rest_lead_ws;
+    let attrs = parse_attrs(full, rest, rest_abs_base)?;
     let mut used = gt + 1; // relative to base
     let mut children = Vec::new();
     if !self_close {
@@ -195,57 +203,71 @@ fn parse_component(full: &str, base: usize) -> PResult<(Component, usize)> {
     ))
 }
 
-fn parse_attrs(mut src: &str) -> PResult<Vec<Attr>> {
+fn parse_attrs(full: &str, src: &str, abs_base: usize) -> PResult<Vec<Attr>> {
+    // Parse attributes from `src`, reporting errors with accurate positions based on `abs_base`.
     let mut out = Vec::new();
-    src = src.trim();
-    while !src.is_empty() {
-        let eq = match src.find('=') {
-            Some(i) => i,
+    let mut i = 0usize; // byte offset into `src`
+    let bytes = src.as_bytes();
+    // skip leading whitespace
+    while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+        i += 1;
+    }
+    while i < bytes.len() {
+        // find '=' separating key=value
+        let rest = &src[i..];
+        let eq_rel = match rest.find('=') {
+            Some(pos) => pos,
             None => {
-                // if trailing non-whitespace remains, it's a malformed attribute token
-                let rest = src.trim();
-                if !rest.is_empty() {
-                    return Err(ParseError {
-                        line: 1,
-                        col: 1,
-                        kind: ErrorKind::Syntax,
-                        msg: format!("malformed attribute near '{}': expected key=value", rest),
-                    });
+                // trailing garbage token -> error at current absolute position
+                let token = rest.trim();
+                if !token.is_empty() {
+                    return Err(mk_err(
+                        full,
+                        abs_base + i,
+                        ErrorKind::Syntax,
+                        format!("malformed attribute near '{}': expected key=value", token),
+                    ));
                 }
                 break;
             }
         };
-        let key = src[..eq].trim().to_string();
-        src = &src[eq + 1..];
-        if src.starts_with('"') {
-            src = &src[1..];
-            let end = match src.find('"') {
-                Some(i) => i,
-                None => {
-                    return Err(ParseError {
-                        line: 1,
-                        col: 1,
-                        kind: ErrorKind::Syntax,
-                        msg: "unterminated quoted attr".into(),
-                    })
+        let key = rest[..eq_rel].trim().to_string();
+        i += eq_rel + 1; // advance past '='
+        if i >= src.len() {
+            return Err(mk_err(full, abs_base + i.saturating_sub(1), ErrorKind::Syntax, "missing attribute value"));
+        }
+        if bytes[i] == b'"' {
+            // quoted value
+            i += 1; // skip opening quote
+            let after = &src[i..];
+            match after.find('"') {
+                Some(end_rel) => {
+                    let val = &src[i..i + end_rel];
+                    out.push(Attr { key, value: val.to_string() });
+                    i += end_rel + 1; // closing quote
+                    // trim following whitespace
+                    while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                        i += 1;
+                    }
                 }
-            };
-            out.push(Attr {
-                key,
-                value: src[..end].to_string(),
-            });
-            src = src[end + 1..].trim_start();
-        } else {
-            let mut end = src.find(' ').unwrap_or(src.len());
-            if let Some(gt) = src.find('>') {
-                end = end.min(gt);
+                None => {
+                    return Err(mk_err(full, abs_base + i, ErrorKind::Syntax, "unterminated quoted attr"));
+                }
             }
-            // Preserve bare values exactly up to whitespace or '>'
-            out.push(Attr {
-                key,
-                value: src[..end].to_string(),
-            });
-            src = src[end..].trim_start();
+        } else {
+            // bare value until whitespace or '>'
+            let rest2 = &src[i..];
+            let mut end_rel = rest2.find(' ').unwrap_or(rest2.len());
+            if let Some(gt) = rest2.find('>') {
+                end_rel = end_rel.min(gt);
+            }
+            let val = &src[i..i + end_rel];
+            out.push(Attr { key, value: val.to_string() });
+            i += end_rel;
+            // trim following whitespace
+            while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
         }
     }
     Ok(out)

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/proofdown/ast.schema.json",
+  "title": "Proofdown AST",
+  "type": "object",
+  "properties": {
+    "blocks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Block" }
+    }
+  },
+  "required": ["blocks"],
+  "$defs": {
+    "TableAlign": {
+      "type": "string",
+      "enum": ["None", "Left", "Center", "Right"]
+    },
+    "Inline": {
+      "oneOf": [
+        { "type": "object", "properties": { "type": {"const": "Text"}, "text": {"type": "string"} }, "required": ["type", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Emph"}, "children": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "children"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Strong"}, "children": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "children"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Strikethrough"}, "children": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "children"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Code"}, "text": {"type": "string"} }, "required": ["type", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "SoftBreak"} }, "required": ["type"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "HardBreak"} }, "required": ["type"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Link"}, "url": {"type": "string"}, "title": {"type": ["string", "null"]}, "children": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "url", "children"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Image"}, "url": {"type": "string"}, "title": {"type": ["string", "null"]}, "alt": {"type": "string"} }, "required": ["type", "url", "alt"], "additionalProperties": false }
+      ]
+    },
+    "TableRow": {
+      "type": "object",
+      "properties": {
+        "cells": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Inline" }
+          }
+        }
+      },
+      "required": ["cells"],
+      "additionalProperties": false
+    },
+    "ListItem": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Block" }
+        },
+        "task": { "type": ["boolean", "null"] }
+      },
+      "required": ["children"],
+      "additionalProperties": false
+    },
+    "Component": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "attrs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Attr" }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Block" }
+        },
+        "self_closing": { "type": "boolean" }
+      },
+      "required": ["name", "attrs", "children", "self_closing"],
+      "additionalProperties": false
+    },
+    "Attr": {
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "value": { "type": "string" }
+      },
+      "required": ["key", "value"],
+      "additionalProperties": false
+    },
+    "Block": {
+      "oneOf": [
+        { "type": "object", "properties": { "type": {"const": "Heading"}, "level": {"type": "integer", "minimum": 1, "maximum": 6}, "inlines": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "level", "inlines"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Paragraph"}, "inlines": {"type": "array", "items": { "$ref": "#/$defs/Inline" } } }, "required": ["type", "inlines"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "BlockQuote"}, "children": {"type": "array", "items": { "$ref": "#/$defs/Block" } } }, "required": ["type", "children"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "ThematicBreak"} }, "required": ["type"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "CodeBlock"}, "info": {"type": "string"}, "text": {"type": "string"} }, "required": ["type", "info", "text"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "List"}, "kind": {"type": "string", "enum": ["Bullet", "Ordered"] }, "start": {"type": ["integer", "null"]}, "tight": {"type": "boolean"}, "items": {"type": "array", "items": { "$ref": "#/$defs/ListItem" } } }, "required": ["type", "kind", "tight", "items"], "additionalProperties": false },
+        { "type": "object", "properties": { "type": {"const": "Table"}, "align": {"type": "array", "items": { "$ref": "#/$defs/TableAlign" } }, "header": {"anyOf": [ {"$ref": "#/$defs/TableRow" }, {"type": "null"} ]}, "rows": {"type": "array", "items": { "$ref": "#/$defs/TableRow" } } }, "required": ["type", "align", "rows"], "additionalProperties": false },
+        { "$ref": "#/$defs/ComponentBlock" }
+      ]
+    },
+    "ComponentBlock": {
+      "type": "object",
+      "properties": {
+        "Component": { "$ref": "#/$defs/Component" },
+        "type": {"const": "Component"}
+      },
+      "required": ["type", "Component"],
+      "additionalProperties": false
+    }
+  }
+}

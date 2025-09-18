@@ -1,10 +1,25 @@
+//! Typed AST and shared error types for Proofdown.
+//!
+//! This crate intentionally contains only data structures with `serde` derives
+//! and small convenience helpers. No IO or runtime logic lives here.
 use serde::{Deserialize, Serialize};
 
 /// Root document consisting of a sequence of blocks.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Document {
+    /// Top-level block sequence
     pub blocks: Vec<Block>,
 }
+
+/// Convenience re-exports for downstream consumers.
+pub mod prelude {
+    pub use crate::{
+        find_attr, Attr, Block, Component, Document, ErrorKind, Inline, ListItem, ListKind,
+        ParseError, TableAlign, TableRow,
+    };
+}
+
+ 
 
 /// Table column alignment
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -18,6 +33,7 @@ pub enum TableAlign {
 /// Table row consisting of inline cell contents per column
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct TableRow {
+    /// Per-column inline content for the row
     pub cells: Vec<Vec<Inline>>,
 }
 
@@ -71,7 +87,9 @@ pub enum ListKind {
 /// List item containing nested blocks and optional GFM task marker
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ListItem {
+    /// Child blocks comprising the list item's content
     pub children: Vec<Block>,
+    /// GFM task checkbox state: Some(true)=checked, Some(false)=unchecked, None=not a task item
     pub task: Option<bool>,
 }
 
@@ -140,6 +158,23 @@ pub struct ParseError {
     pub msg: String,
 }
 
+impl ErrorKind {
+    /// Stable string code for JSON payloads and cross-language use.
+    pub fn as_code(&self) -> &'static str {
+        match self {
+            ErrorKind::Syntax => "Syntax",
+            ErrorKind::LimitExceeded => "LimitExceeded",
+        }
+    }
+}
+
+impl ParseError {
+    /// Construct a new `ParseError`.
+    pub fn new(line: usize, col: usize, kind: ErrorKind, msg: impl Into<String>) -> Self {
+        Self { line, col, kind, msg: msg.into() }
+    }
+}
+
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let code = match self.kind {
@@ -158,4 +193,16 @@ pub fn find_attr<'a>(attrs: &'a [Attr], key: &str) -> Option<&'a str> {
         .iter()
         .find(|a| a.key == key)
         .map(|a| a.value.as_str())
+}
+
+impl From<(usize, usize, &'_ str)> for ParseError {
+    fn from(t: (usize, usize, &str)) -> Self {
+        ParseError::new(t.0, t.1, ErrorKind::Syntax, t.2)
+    }
+}
+
+impl From<(usize, usize, String)> for ParseError {
+    fn from(t: (usize, usize, String)) -> Self {
+        ParseError::new(t.0, t.1, ErrorKind::Syntax, t.2)
+    }
 }

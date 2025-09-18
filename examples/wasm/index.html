@@ -28,22 +28,25 @@
     </div>
 
     <script type="module">
-      async function loadWasm() {
-        const wasmUrl = '/target/wasm32-unknown-unknown/debug/proofdown_wasm.wasm';
-        const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmUrl), {});
-        // wasm_bindgen glue not generated in this minimal example; instead, call exported function index 0.
-        // This is only a placeholder; for a working demo, use wasm-bindgen or wasm-pack.
-        return null;
+      import init, { wasm_parse } from './pkg/proofdown_wasm.js';
+
+      async function main() {
+        await init();
+        const btn = document.getElementById('parse');
+        const input = document.getElementById('input');
+        const out = document.getElementById('out');
+        btn.addEventListener('click', () => {
+          try {
+            const resultJson = wasm_parse(input.value);
+            const obj = JSON.parse(resultJson);
+            out.textContent = JSON.stringify(obj, null, 2);
+          } catch (e) {
+            out.textContent = JSON.stringify({ ok: false, err: { code: 'JS', msg: String(e) } }, null, 2);
+          }
+        });
       }
 
-      document.getElementById('parse').addEventListener('click', async () => {
-        // Placeholder: in a full demo, call wasm_parse via wasm-bindgen and display JSON
-        const text = document.getElementById('input').value;
-        const out = { ok: true, note: 'This is a placeholder. Use wasm-pack to call wasm_parse.' };
-        document.getElementById('out').textContent = JSON.stringify(out, null, 2);
-      });
-
-      loadWasm().catch(err => console.error(err));
+      main().catch(err => console.error(err));
     </script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 use assert_cmd::prelude::*;
+use assert_cmd::Command;
 use predicates::prelude::*;
 use std::fs;
-use std::process::Command;
 use tempfile::NamedTempFile;
 
 #[test]
@@ -17,6 +17,41 @@ fn help_and_version_work() {
     cmd.assert()
         .success()
         .stdout(predicate::str::is_match(r"\d+\.\d+\.\d+").unwrap());
+}
+
+#[test]
+fn parse_human_error_exit_code_1() {
+    let tmp = NamedTempFile::new().expect("tmp");
+    fs::write(tmp.path(), "<card title=\"unterminated>").expect("write");
+    let mut cmd = Command::cargo_bin("pml").expect("bin");
+    cmd.arg("parse").arg(tmp.path());
+    cmd.assert()
+        .failure()
+        .code(1)
+        .stderr(predicate::str::contains("Parse error at"));
+}
+
+#[test]
+fn validate_human_error_exit_code_2() {
+    let tmp = NamedTempFile::new().expect("tmp");
+    fs::write(tmp.path(), "<foo id=\"x\" />").expect("write");
+    let mut cmd = Command::cargo_bin("pml").expect("bin");
+    cmd.arg("validate").arg(tmp.path());
+    cmd.assert()
+        .failure()
+        .code(2)
+        .stderr(predicate::str::contains("Validation error"));
+}
+
+#[test]
+fn parse_from_stdin_json_ok() {
+    let input = "# T\n\n<card title=\"T\" />\n";
+    let mut cmd = Command::cargo_bin("pml").expect("bin");
+    cmd.arg("parse").arg("-").arg("--json")
+        .write_stdin(input)
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("\"blocks\""));
 }
 
 #[test]
