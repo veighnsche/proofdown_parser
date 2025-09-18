@@ -20,14 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        if: >-
-          github.event_name == 'push' ||
-          github.event_name == 'workflow_dispatch' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
-        with:
-          enablement: true
       - name: Install mdBook
         run: cargo install mdbook --version ^0.4
       - name: Build book
