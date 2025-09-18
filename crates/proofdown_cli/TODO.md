@@ -10,13 +10,13 @@ Scope: User-facing CLI for the Proofdown toolchain. Provide deterministic output
   - [x] `--json`, `--pretty`
   - [x] Limits: `--limits.depth`, `--limits.nodes`, `--limits.input-size`
   - [x] `--help|-h`, `--version|-V`
-- [ ] NEXT: UX and output stability
-  - [ ] Standardize JSON error payloads (keys: `ok`, `err.code`, `err.msg`, `err.line`, `err.col`)
-  - [ ] Align `validate` errors to include `ValidateError::code()` in JSON mode
-  - [ ] Human output: concise one-line errors (parse/validate) + hints
-  - [ ] Consistent exit codes: 0=OK, 1=parse error, 2=validation error, 3=IO/usage
-- [ ] LATER: Ergonomics and packaging
-  - [ ] Read from stdin when `<file>` is `-` (document encoding expectations)
+- [x] NEXT: UX and output stability
+  - [x] Standardize JSON error payloads (keys: `ok`, `err.code`, `err.msg`, `err.line`, `err.col`)
+  - [x] Align `validate` errors to include `ValidateError::code()` in JSON mode
+  - [x] Human output: concise one-line errors (parse/validate) + hints
+  - [x] Consistent exit codes: 0=OK, 1=parse error, 2=validation error, 3=IO/usage
+  - [x] Read from stdin when `<file>` is `-` (document encoding expectations)
+- [x] LATER: Ergonomics and packaging
   - [ ] Shell completions (bash/zsh/fish) via `clap_complete` (optional)
   - [ ] Prebuilt binaries (GitHub Releases) or `cargo install` instructions
   - [ ] Windows/macOS/Linux smoke tests in CI matrix
@@ -28,17 +28,17 @@ Scope: User-facing CLI for the Proofdown toolchain. Provide deterministic output
 - [x] Limits: depth enforced (failure)
 - [x] Limits: input-size enforced (failure)
 - [x] `--help` and `--version`
-- [ ] File not found (usage exit code; JSON and human modes)
-- [ ] Non-UTF8 input handling (fails clearly, JSON and human modes)
-- [ ] Parse error path (unknown/malformed input) -> exit 1, stable stderr/stdout
-- [ ] Validate error path (unknown component/attr) -> exit 2
-- [ ] CRLF normalization: `parse` output equality under `--json` for LF vs CRLF inputs
+- [x] File not found (usage exit code; JSON and human modes)
+- [x] Non-UTF8 input handling (fails clearly, JSON and human modes)
+- [x] Parse error path (unknown/malformed input) -> exit 1, stable stderr/stdout
+- [x] Validate error path (unknown component/attr) -> exit 2
+- [x] CRLF normalization: `parse` output equality under `--json` for LF vs CRLF inputs
 - [ ] Snapshot tests for human-readable outputs (minimal, to avoid flakiness)
 
 ## UX & Docs
 
-- [ ] Improve `usage()` with examples and limits flags documentation
-- [ ] Document exit codes in `--help` and README
+- [x] Improve `usage()` with examples and limits flags documentation
+- [x] Document exit codes in `--help` and README
 - [ ] Add a `--quiet` flag to suppress non-JSON messages (optional)
 
 ## CI

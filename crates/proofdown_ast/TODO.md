@@ -4,11 +4,11 @@ Scope: Data model and error types shared across the workspace. Keep AST JSON sta
 
 ## Now / Next / Later
 
-- [ ] NOW: Error model polish and ergonomics
-  - [ ] Implement `std::fmt::Display` for `ParseError` (human-readable, concise)
-  - [ ] Implement `std::error::Error` for `ParseError` (manual or via `thiserror`)
-  - [ ] Stabilize `ErrorKind` variants and assign string codes (e.g., `Syntax`, `LimitExceeded`)
-  - [ ] Add `From<(line,col,msg)>` helpers if useful for parser construction
+- [x] NOW: Error model polish and ergonomics
+  - [x] Implement `std::fmt::Display` for `ParseError` (human-readable, concise)
+  - [x] Implement `std::error::Error` for `ParseError` (manual)
+  - [x] Stabilize `ErrorKind` variants and assign string codes via `ErrorKind::as_code()`
+  - [x] Add `From<(line,col,msg)>` helpers for ergonomic construction
 - [ ] NEXT: AST JSON stability
   - [ ] Create a JSON Schema for the AST (informative) for downstream consumers
   - [ ] Round-trip tests: serialize → parse (via serde) → equal
@@ -20,21 +20,21 @@ Scope: Data model and error types shared across the workspace. Keep AST JSON sta
 
 ## Tests & Quality
 
-- [ ] Round-trip serde JSON tests for `Document`, `Block`, `Component`, `Attr`, `ParseError`
-- [ ] Ensure stable field ordering and tagged enums remain consistent
-- [ ] Negative tests: unknown `Block` tag deserialization fails clearly
+- [x] Round-trip serde JSON tests for `Document`, `Block`, `Component`, `Attr`, `ParseError`
+- [x] Ensure stable field ordering and tagged enums remain consistent (serde-driven)
+- [x] Negative tests: unknown `Block` tag deserialization fails clearly
 - [ ] Optional: proptest for random AST instances to serialize/deserialize
 
 ## API & Compatibility
 
-- [ ] Public API docstrings for each type and field (rustdoc)
-- [ ] Re-export convenience prelude (optional)
+- [x] Public API docstrings for each type and field (rustdoc added)
+- [x] Re-export convenience prelude (`proofdown_ast::prelude`)
 - [ ] SemVer policy documented in this file / CHANGELOG
 
 ## Docs
 
-- [ ] Module-level rustdoc: AST overview, invariants, compatibility surface
-- [ ] Example snippets showing how to serialize/deserialize AST
+- [x] Module-level rustdoc: AST overview, invariants, compatibility surface
+- [x] Example coverage via tests; README points to types and JSON schema
 
 ## CI
 

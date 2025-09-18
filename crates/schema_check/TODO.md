@@ -4,12 +4,12 @@ Scope: Validate Proofdown table schemas (JSON Schema files) for basic correctnes
 
 ## Now / Next / Later
 
-- [ ] NOW: Improve checks without external network or heavy dependencies
-  - [ ] Validate that `$schema` is present and references Draft 2020-12 or 2019-09
-  - [ ] Validate that `type: "object"` root exists and `properties` is an object
-  - [ ] Check that `required` keys (if present) are a subset of `properties`
-  - [ ] Warn (non-fatal) on unknown top-level keys (e.g., typos)
-  - [ ] Add `--strict` flag to turn warnings into errors (optional)
+- [x] NOW: Improve checks without external network or heavy dependencies
+  - [x] Validate that `$schema` is present and references Draft 2020-12 or 2019-09
+  - [x] Validate that `type: "object"` root exists and `properties` is an object
+  - [x] Check that `required` keys (if present) are a subset of `properties`
+  - [x] Warn (non-fatal) on unknown top-level keys (e.g., typos)
+  - [x] Add `--strict` flag to turn warnings into errors (optional)
 - [ ] NEXT: `$ref` and composition (local-only)
   - [ ] Support local `$ref` resolution within the same document (`#/$defs/...`)
   - [ ] Validate `$defs` objects and resolve simple circular references (detect cycles)
@@ -21,10 +21,10 @@ Scope: Validate Proofdown table schemas (JSON Schema files) for basic correctnes
 
 ## CLI & UX
 
-- [ ] Accept directory path and print a summary (already)
-- [ ] Add `--json` output with file-by-file status
-- [ ] Add `--strict` mode to make warnings fatal (exit non-zero)
-- [ ] Provide counts: files seen, passed, warned, failed
+- [x] Accept directory path and print a summary
+- [x] Add `--json` output with file-by-file status
+- [x] Add `--strict` mode to make warnings fatal (exit non-zero)
+- [x] Provide counts: files seen, passed, warned, failed
 
 ## Tests
 

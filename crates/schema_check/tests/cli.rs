@@ -1,7 +1,6 @@
 use assert_cmd::prelude::*;
 use predicates::prelude::*;
 use std::fs;
-use std::io::Write;
 use std::path::PathBuf;
 use tempfile::tempdir;
 use std::process::Command;
@@ -51,10 +50,11 @@ fn required_not_in_properties_is_error() {
     }"#);
     let mut cmd = Command::cargo_bin("schema_check").expect("bin");
     cmd.arg(td.path()).arg("--json");
-    cmd.assert()
-        .failure()
-        .stderr(predicate::str::contains("validated"))
-        .stdout(predicate::str::contains("$ref").not());
+    let out = cmd.assert().failure().get_output().stdout.clone();
+    let v: serde_json::Value = serde_json::from_slice(&out).expect("json");
+    assert_eq!(v["summary"]["failed"], 1);
+    let files = v["files"].as_array().unwrap();
+    assert!(files.iter().any(|f| f["errors"].to_string().contains("required")));
 }
 
 #[test]

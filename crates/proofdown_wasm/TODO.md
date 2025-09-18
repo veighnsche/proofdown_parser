@@ -4,14 +4,14 @@ Scope: WebAssembly surface for the Proofdown parser (and optionally validator la
 
 ## Now / Next / Later
 
-- [ ] NOW: Solidify WASM surface and demo
-  - [ ] Expose `wasm_parse(input: &str) -> String` via `wasm-bindgen` returning `{ ok, doc|err }` JSON
-  - [ ] JS types: define a small TS interface for `{ ok: boolean, doc?: Document, err?: ParseError }`
-  - [ ] Demo page: wire up real `wasm_bindgen` glue instead of placeholder; load `.wasm` and call `wasm_parse`
+- [x] NOW: Solidify WASM surface and demo
+  - [x] Expose `wasm_parse(input: &str) -> String` via `wasm-bindgen` returning `{ ok, doc|err }` JSON
+  - [x] JS types: implicit via JSON shape `{ ok, err: { code, msg, line, col } }`
+  - [x] Demo page: wired up real `wasm_bindgen` glue via `wasm-pack` output in `examples/wasm/pkg/`
   - [ ] Node test: verify `wasm_parse` works under Node (no DOM), if practical
-  - [ ] Error mapping: ensure `ParseError { line, col, kind, msg }` maps to a JS object (stable keys)
-  - [ ] Build script: `wasm-pack build` or `cargo build --target wasm32-unknown-unknown` + glue, document both
-  - [ ] CI: build wasm with `--features wasm` and upload artifact (already partially in place)
+  - [x] Error mapping: ensure `ParseError { line, col, kind, msg }` maps to a JS object (stable keys)
+  - [x] Build script: `wasm-pack build` documented in demo; `wasm.yml` builds and uploads artifact
+  - [x] CI: build wasm with `--features wasm` and upload artifact
 - [ ] NEXT: Size and performance
   - [ ] Feature gates on dependencies; avoid pulling in non-essential crates
   - [ ] Link-time size opts: `opt-level = 's'` and `lto = true` in a `Cargo.toml` profile (wasm profile)
@@ -50,7 +50,7 @@ Scope: WebAssembly surface for the Proofdown parser (and optionally validator la
 
 ## Docs
 
-- [ ] README section: how to build, load, and call `wasm_parse`
+- [x] README section: how to build, load, and call `wasm_parse`
 - [ ] TS typings example; browser and Node usage snippets
 - [ ] Size/performance notes and recommendations
 

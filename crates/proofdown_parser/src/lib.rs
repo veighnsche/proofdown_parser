@@ -32,6 +32,25 @@ pub struct ParserLimits {
     pub max_input_bytes: usize,
 }
 
+fn detect_task_item<'a>(node: &'a AstNode<'a>) -> Option<bool> {
+    // Depth-first search for a TaskItem marker; return its checked state as boolean.
+    for ch in node.children() {
+        if let NodeValue::TaskItem(payload) = &ch.data.borrow().value {
+            // Robust across comrak versions: payload may be bool, Option<char>, Option<bool>
+            let s = format!("{:?}", payload);
+            let state = match s.as_str() {
+                "true" | "Some(true)" | "Some('x')" | "Some('X')" => true,
+                _ => false,
+            };
+            return Some(state);
+        }
+        if let Some(state) = detect_task_item(ch) {
+            return Some(state);
+        }
+    }
+    None
+}
+
 impl Default for ParserLimits {
     fn default() -> Self {
         Self {
@@ -382,20 +401,19 @@ fn map_block<'a>(node: &'a AstNode<'a>) -> Option<Block> {
             };
             let mut items = Vec::new();
             for child in node.children() {
-                if let NodeValue::Item(_li) = &child.data.borrow().value {
-                    let task = if let Some(ch) = child.first_child() {
-                        if let NodeValue::TaskItem(checked) = ch.data.borrow().value {
-                            Some(checked.is_some())
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    };
-                    items.push(ListItem {
-                        children: collect_blocks(child),
-                        task,
-                    });
+                match &child.data.borrow().value {
+                    NodeValue::Item(_li) => {
+                        let task = detect_task_item(child);
+                        let children_blocks = collect_blocks(child);
+                        items.push(ListItem { children: children_blocks, task });
+                    }
+                    NodeValue::TaskItem(payload) => {
+                        let s = format!("{:?}", payload);
+                        let state = matches!(s.as_str(), "true" | "Some(true)" | "Some('x')" | "Some('X')");
+                        let children_blocks = collect_blocks(child);
+                        items.push(ListItem { children: children_blocks, task: Some(state) });
+                    }
+                    _ => {}
                 }
             }
             let start = if l.start == 1 {
