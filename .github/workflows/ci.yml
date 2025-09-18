@@ -61,13 +61,23 @@ jobs:
 
   wasm:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('crates/proofdown_wasm/Cargo.toml') != '' }}
     steps:
       - uses: actions/checkout@v4
+      - name: Check for proofdown_wasm crate
+        id: check_wasm
+        run: |
+          if [ -f "crates/proofdown_wasm/Cargo.toml" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ steps.check_wasm.outputs.exists == 'true' }}
       - name: Add wasm32 target
+        if: ${{ steps.check_wasm.outputs.exists == 'true' }}
         run: rustup target add wasm32-unknown-unknown
       - name: Build proofdown_wasm (wasm32)
+        if: ${{ steps.check_wasm.outputs.exists == 'true' }}
         run: cargo build -p proofdown_wasm --no-default-features --features wasm --target wasm32-unknown-unknown
 
   fuzz-smoke:
