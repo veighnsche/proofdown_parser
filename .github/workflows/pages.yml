@@ -1,8 +1,9 @@
-name: GitHub Pages
+name: GitHub Pages (manual)
 
 on:
-  push:
-    branches: [ main ]
+  # Disabled from automatic runs to avoid duplicating mdBook builds/deployments.
+  # Use the mdbook.yml workflow for automatic Pages builds/deployments.
+  workflow_dispatch:
 
 concurrency:
   group: Pages-${{ github.ref }}
