@@ -21,8 +21,8 @@ These items track gaps, refinements, and follow-ups discovered while modularizin
 - [x] Validate list start indices for ordered lists.
   - Added `ordered_list_with_non_one_start_has_start_field` test.
 
-- [ ] Consider optional footnotes support (if desired) gated by a feature flag.
-  - Out of current scope; document decision in the spec if added.
+- [x] Consider optional footnotes support (if desired) gated by a feature flag.
+  - Implemented via Cargo feature `footnotes` that enables Comrak footnotes extension; README updated to document optionality.
 
 - [x] CLI UX: add `--version` integration test and a `--help` smoke test.
   - Already present; expanded CLI tests for stdin handling and human/JSON error paths with exit codes.

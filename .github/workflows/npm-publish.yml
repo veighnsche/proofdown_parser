@@ -1,0 +1,27 @@
+name: Publish WASM to NPM
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install wasm-pack
+        run: |
+          curl -sL https://rustwasm.github.io/wasm-pack/installer/init.sh -o /tmp/init.sh
+          bash /tmp/init.sh -f
+      - name: Build WASM (node target)
+        run: wasm-pack build crates/proofdown_wasm --target nodejs --out-dir examples/wasm/pkg-node --release
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd examples/wasm/pkg-node
+          npm publish --access public

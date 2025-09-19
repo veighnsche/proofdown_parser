@@ -9,7 +9,7 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = { version = "0.4" }
-proofdown_parser = { path = "crates/proofdown_parser" }
+proofdown_parser = { path = "../crates/proofdown_parser" }
 
 [[bin]]
 name = "parse"

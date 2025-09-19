@@ -9,15 +9,35 @@ struct FileReport {
     warnings: Vec<String>,
 }
 
+fn contains_remote_ref(v: &Value) -> bool {
+    fn walk(v: &Value) -> bool {
+        match v {
+            Value::Object(m) => {
+                if let Some(Value::String(s)) = m.get("$ref") {
+                    if s.starts_with("http://") || s.starts_with("https://") {
+                        return true;
+                    }
+                }
+                m.values().any(walk)
+            }
+            Value::Array(a) => a.iter().any(walk),
+            _ => false,
+        }
+    }
+    walk(v)
+}
+
 fn main() -> Result<()> {
     let mut args = env::args().skip(1);
     let mut json_mode = false;
     let mut strict = false;
     let mut dir_arg: Option<String> = None;
+    let mut full = false;
     for a in args.by_ref() {
         match a.as_str() {
             "--json" => json_mode = true,
             "--strict" => strict = true,
+            "--full" => full = true,
             s if dir_arg.is_none() => {
                 dir_arg = Some(s.to_string());
             }
@@ -34,6 +54,7 @@ fn main() -> Result<()> {
     let mut failed = 0usize;
     let mut reports: Vec<(String, FileReport)> = Vec::new();
 
+    const MAX_SCHEMA_BYTES: u64 = 5 * 1024 * 1024; // 5 MiB cap to avoid pathological sizes
     for entry in WalkDir::new(&schemas_dir)
         .into_iter()
         .filter_map(|e| e.ok())
@@ -47,10 +68,26 @@ fn main() -> Result<()> {
         }
         total += 1;
         let mut rep = FileReport::default();
+        // File size limit
+        if let Ok(meta) = fs::metadata(path) {
+            if meta.len() > MAX_SCHEMA_BYTES {
+                rep.errors.push(format!(
+                    "schema file too large: {} bytes (max {})",
+                    meta.len(), MAX_SCHEMA_BYTES
+                ));
+                finalize_file(&mut reports, &schemas_dir, path, rep, &mut passed, &mut warned, &mut failed, strict);
+                continue;
+            }
+        }
         let data =
             fs::read_to_string(path).with_context(|| format!("reading {}", path.display()))?;
         let schema_json: Value = serde_json::from_str(&data)
             .with_context(|| format!("parsing {}", path.display()))?;
+
+        // Forbid remote $ref (http/https)
+        if contains_remote_ref(&schema_json) {
+            rep.errors.push("remote $ref not allowed (http/https)".into());
+        }
 
         // Root object
         let obj = match schema_json.as_object() {
@@ -122,6 +159,13 @@ fn main() -> Result<()> {
             }
         }
         validate_local_refs(obj, &mut rep);
+
+        // Optional full validation: attempt to compile schema
+        if full && rep.errors.is_empty() {
+            if let Err(e) = jsonschema::JSONSchema::compile(&schema_json) {
+                rep.errors.push(format!("schema compilation failed: {}", e));
+            }
+        }
 
         finalize_file(&mut reports, &schemas_dir, path, rep, &mut passed, &mut warned, &mut failed, strict);
     }

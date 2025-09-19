@@ -9,10 +9,10 @@ Scope: Data model and error types shared across the workspace. Keep AST JSON sta
   - [x] Implement `std::error::Error` for `ParseError` (manual)
   - [x] Stabilize `ErrorKind` variants and assign string codes via `ErrorKind::as_code()`
   - [x] Add `From<(line,col,msg)>` helpers for ergonomic construction
-- [ ] NEXT: AST JSON stability
-  - [ ] Create a JSON Schema for the AST (informative) for downstream consumers
-  - [ ] Round-trip tests: serialize → parse (via serde) → equal
-  - [ ] Backward-compat guide: how to evolve AST without breaking semver/contracts
+- [x] NEXT: AST JSON stability
+  - [x] Create a JSON Schema for the AST (informative) for downstream consumers (`.specs/ast.schema.json`)
+  - [x] Round-trip tests: serialize → parse (via serde) → equal (see `tests/serde_roundtrip.rs`)
+  - [x] Backward-compat guide: documented SemVer/compatibility policy in `.docs/ast-compatibility.md`
 - [ ] LATER: Extensibility & performance
   - [ ] Document extension points (new `Block` variants or `Component` fields) and semver process
   - [ ] Bench serde serialize/deserialize for large documents (ensure no pathological slowdowns)
@@ -29,7 +29,7 @@ Scope: Data model and error types shared across the workspace. Keep AST JSON sta
 
 - [x] Public API docstrings for each type and field (rustdoc added)
 - [x] Re-export convenience prelude (`proofdown_ast::prelude`)
-- [ ] SemVer policy documented in this file / CHANGELOG
+- [x] SemVer policy documented in `.docs/ast-compatibility.md`
 
 ## Docs
 
@@ -38,7 +38,7 @@ Scope: Data model and error types shared across the workspace. Keep AST JSON sta
 
 ## CI
 
-- [ ] Add crate-specific tests to CI (already runs via workspace)
+- [x] Add crate-specific tests to CI (runs via workspace test job)
 - [ ] Optional: coverage report job (later)
 
 ## Security & Safety

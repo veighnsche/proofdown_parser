@@ -25,6 +25,29 @@ jobs:
           bash /tmp/init.sh -f
       - name: Build with wasm-pack (web target)
         run: wasm-pack build crates/proofdown_wasm --target web --out-dir examples/wasm/pkg --release
+      - name: Build with wasm-pack (node target)
+        run: wasm-pack build crates/proofdown_wasm --target nodejs --out-dir examples/wasm/pkg-node --release
+      - name: Install binaryen (wasm-opt)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binaryen
+      - name: Optimize wasm with wasm-opt
+        run: |
+          wasm-opt -Oz -o examples/wasm/pkg/proofdown_wasm_bg.opt.wasm examples/wasm/pkg/proofdown_wasm_bg.wasm
+      - name: Parity check (WASM vs native)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo -e "# T\n\n<card title=\"T\" />\n" > sample.pml
+          cargo run -q -p proofdown_cli -- parse sample.pml --json > native.json
+          node -e '
+            const fs = require("fs");
+            const mod = require("./examples/wasm/pkg-node/proofdown_wasm.js");
+            (async () => { await mod.default(); const input = fs.readFileSync("sample.pml", "utf8"); const out = JSON.parse(mod.wasm_parse(input)); fs.writeFileSync("wasm.json", JSON.stringify(out.doc)); })().catch(e => { console.error(e); process.exit(1); });
+          '
+          # wait a moment for node write
+          sleep 1
+          diff -u native.json wasm.json
       - name: Upload demo artifact
         uses: actions/upload-artifact@v4
         with:

@@ -18,6 +18,12 @@
     <div class="row">
       <div>
         <h3>Input</h3>
+        <label for="examples">Examples:</label>
+        <select id="examples">
+          <option value="minimal">Minimal</option>
+          <option value="table">Table with alignment</option>
+          <option value="tasklist">Task list</option>
+        </select>
         <textarea id="input"># Title\n\n<card title="T" /></textarea>
         <button id="parse">Parse</button>
       </div>
@@ -35,6 +41,17 @@
         const btn = document.getElementById('parse');
         const input = document.getElementById('input');
         const out = document.getElementById('out');
+        const dd = document.getElementById('examples');
+
+        const samples = {
+          minimal: "# Title\n\n<card title=\"T\" />\n",
+          table: "| Left | Center | Right |\n|:-----|:------:|------:|\n| a    |   b    |     c |\n",
+          tasklist: "- [x] done item\n- [ ] todo item\n",
+        };
+
+        dd.addEventListener('change', () => {
+          input.value = samples[dd.value] || samples.minimal;
+        });
         btn.addEventListener('click', () => {
           try {
             const resultJson = wasm_parse(input.value);

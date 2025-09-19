@@ -24,3 +24,5 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Validate JSON Schemas
         run: cargo run -p schema_check -- .specs/schemas
+      - name: Validate JSON Schemas (strict)
+        run: cargo run -p schema_check -- .specs/schemas --strict --json

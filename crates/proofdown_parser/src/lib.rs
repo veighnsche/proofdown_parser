@@ -366,6 +366,10 @@ fn parse_markdown_blocks(src: &str) -> Vec<Block> {
     opts.extension.strikethrough = true;
     opts.extension.autolink = true;
     opts.extension.tasklist = true;
+    #[cfg(feature = "footnotes")]
+    {
+        opts.extension.footnotes = true;
+    }
     let root = parse_document(&arena, src, &opts);
     let mut blocks = Vec::new();
     for node in root.children() {

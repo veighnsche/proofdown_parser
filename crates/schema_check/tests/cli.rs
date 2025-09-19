@@ -80,3 +80,38 @@ fn unknown_top_level_key_warns_and_strict_fails() {
         .assert()
         .failure();
 }
+
+#[test]
+fn local_ref_under_defs_is_resolved() {
+    let td = tempdir().unwrap();
+    let _p = write_schema(td.path(), "defs.json", r##"{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "$defs": {
+            "A": { "type": "string" }
+        },
+        "properties": { "a": { "$ref": "#/$defs/A" } }
+    }"##);
+    Command::cargo_bin("schema_check")
+        .expect("bin")
+        .args([td.path().to_str().unwrap()])
+        .assert()
+        .success();
+}
+
+#[test]
+fn bad_composition_keyword_type_errors() {
+    let td = tempdir().unwrap();
+    let _p = write_schema(td.path(), "bad.json", r#"{
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "allOf": {}
+    }"#);
+    let mut cmd = Command::cargo_bin("schema_check").expect("bin");
+    cmd.arg(td.path()).arg("--json");
+    let out = cmd.assert().failure().get_output().stdout.clone();
+    let v: serde_json::Value = serde_json::from_slice(&out).expect("json");
+    assert_eq!(v["summary"]["failed"], 1);
+    let files = v["files"].as_array().unwrap();
+    assert!(files.iter().any(|f| f["errors"].to_string().contains("allOf")));
+}

@@ -28,21 +28,21 @@ Scope: Validate Proofdown table schemas (JSON Schema files) for basic correctnes
 
 ## Tests
 
-- [ ] Unit tests for `$schema` presence and draft checks
-- [ ] Tests for `properties` shape and `required` subset
-- [ ] Tests for `$defs` structure and local `$ref` basics
-- [ ] Tests for warning vs. strict behavior
+- [x] Unit tests for `$schema` presence and draft checks
+- [x] Tests for `properties` shape and `required` subset
+- [x] Tests for `$defs` structure and local `$ref` basics
+- [x] Tests for warning vs. strict behavior
 
 ## CI
 
 - [x] Run schema checks in main workflow
-- [ ] Add a separate job for `--strict` on default schemas (when ready)
+- [x] Add a separate job for `--strict` on default schemas (added to `schema.yml`)
 
 ## Docs
 
-- [ ] Document intended scope and non-goals (no network, deterministic)
-- [ ] Provide examples of passing/failing schemas
-- [ ] Explain how this interacts with Proofdown validator (advisory only)
+- [x] Document intended scope and non-goals (no network, deterministic)
+- [x] Provide examples of passing/failing schemas
+- [x] Explain how this interacts with Proofdown validator (advisory only)
 
 ## Security & Safety
 

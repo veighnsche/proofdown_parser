@@ -19,7 +19,7 @@ Scope: User-facing CLI for the Proofdown toolchain. Provide deterministic output
 - [x] LATER: Ergonomics and packaging
   - [ ] Shell completions (bash/zsh/fish) via `clap_complete` (optional)
   - [ ] Prebuilt binaries (GitHub Releases) or `cargo install` instructions
-  - [ ] Windows/macOS/Linux smoke tests in CI matrix
+  - [x] Windows/macOS/Linux smoke tests in CI matrix
 
 ## Tests (must have)
 
@@ -39,7 +39,7 @@ Scope: User-facing CLI for the Proofdown toolchain. Provide deterministic output
 
 - [x] Improve `usage()` with examples and limits flags documentation
 - [x] Document exit codes in `--help` and README
-- [ ] Add a `--quiet` flag to suppress non-JSON messages (optional)
+- [x] Add a `--quiet` flag to suppress non-JSON messages (optional)
 
 ## CI
 
